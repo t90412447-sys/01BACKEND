@@ -31,28 +31,14 @@ import {
 } from "lucide-react";
 
 // ============================================================================
-// STYLES
-// ============================================================================
-const styles = {
-  '@keyframes fall': {
-    '0%': { transform: 'translateY(-20px) rotate(0deg) scale(0)' },
-    '100%': { transform: 'translateY(100vh) rotate(720deg) scale(1)' }
-  },
-  '@keyframes glowPulse': {
-    '0%, 100%': { opacity: 1 },
-    '50%': { opacity: 0.5 }
-  }
-};
-
-// ============================================================================
 // MOCK DATA
 // ============================================================================
 const MOCK_CURRENT_TRAITS = [
-  { trait: "Conversation", current: 45, future: 85, icon: MessageCircle, color: "#00f0ff" },
-  { trait: "Listening", current: 60, future: 90, icon: Heart, color: "#a855f7" },
-  { trait: "Confidence", current: 35, future: 80, icon: Zap, color: "#ff0080" },
-  { trait: "Networking", current: 40, future: 75, icon: Users, color: "#00ff88" },
-  { trait: "Empathy", current: 70, future: 95, icon: Sparkles, color: "#fbbf24" },
+  { trait: "Conversation", current: 45, future: 85, icon: MessageCircle, color: "#a855f7" },
+  { trait: "Listening", current: 60, future: 90, icon: Heart, color: "#c084fc" },
+  { trait: "Confidence", current: 35, future: 80, icon: Zap, color: "#d946ef" },
+  { trait: "Networking", current: 40, future: 75, icon: Users, color: "#9333ea" },
+  { trait: "Empathy", current: 70, future: 95, icon: Sparkles, color: "#e879f9" },
 ];
 
 const MOCK_SKILLS = [
@@ -61,7 +47,7 @@ const MOCK_SKILLS = [
     level: 45,
     xp: 2250,
     maxXp: 5000,
-    color: "#00f0ff",
+    color: "#a855f7",
     trend: [30, 32, 35, 38, 40, 45],
   },
   {
@@ -69,7 +55,7 @@ const MOCK_SKILLS = [
     level: 70,
     xp: 3500,
     maxXp: 5000,
-    color: "#a855f7",
+    color: "#c084fc",
     trend: [55, 58, 62, 65, 68, 70],
   },
   {
@@ -77,7 +63,7 @@ const MOCK_SKILLS = [
     level: 35,
     xp: 1750,
     maxXp: 5000,
-    color: "#ff0080",
+    color: "#d946ef",
     trend: [20, 23, 26, 29, 32, 35],
   },
   {
@@ -85,7 +71,7 @@ const MOCK_SKILLS = [
     level: 40,
     xp: 2000,
     maxXp: 5000,
-    color: "#00ff88",
+    color: "#9333ea",
     trend: [25, 28, 32, 35, 38, 40],
   },
 ];
@@ -159,19 +145,19 @@ const ARCHETYPES = {
   connector: {
     name: "Connector",
     icon: "🤝",
-    color: "#00ff88",
+    color: "#c084fc",
     traits: ["Social", "Engaging", "Empathetic"],
   },
   supporter: {
     name: "Supporter",
     icon: "💚",
-    color: "#00f0ff",
+    color: "#9333ea",
     traits: ["Caring", "Loyal", "Encouraging"],
   },
   influencer: {
     name: "Influencer",
     icon: "⭐",
-    color: "#ff0080",
+    color: "#d946ef",
     traits: ["Charismatic", "Confident", "Inspiring"],
   },
 };
@@ -219,23 +205,69 @@ const TIMELINE_EVENTS = [
     stage: "Building Confidence",
     description: "Joined a group activity and met new people",
     icon: "🎉",
-    color: "#00f0ff",
+    color: "#c084fc",
   },
   {
     id: 3,
     stage: "Taking Initiative",
     description: "Now confident initiating conversations",
     icon: "🚀",
-    color: "#ff0080",
+    color: "#d946ef",
   },
   {
     id: 4,
     stage: "Next Level",
     description: "Ready for networking events and challenges",
     icon: "⭐",
-    color: "#00ff88",
+    color: "#e879f9",
   },
 ];
+
+// ============================================================================
+// PARTICLE BACKGROUND
+// ============================================================================
+const ParticleBackground = () => {
+  const particles = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 6 + 2,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    duration: Math.random() * 25 + 15,
+    delay: Math.random() * 8,
+    opacity: Math.random() * 0.5 + 0.2,
+    color: i % 3 === 0 ? 'rgba(168, 85, 247, 0.5)' : i % 3 === 1 ? 'rgba(192, 132, 252, 0.4)' : 'rgba(147, 51, 234, 0.45)',
+  }));
+
+  return (
+    <>
+      <style>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+      `}</style>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, overflow: 'hidden' }}>
+        {particles.map(p => (
+          <div
+            key={p.id}
+            style={{
+              position: 'absolute',
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              borderRadius: '50%',
+              background: p.color,
+              animation: `float ${p.duration}s infinite ease-in-out ${p.delay}s`,
+              boxShadow: `0 0 ${p.size * 4}px ${p.color}`,
+              opacity: p.opacity,
+            }}
+          />
+        ))}
+      </div>
+    </>
+  );
+};
 
 // ============================================================================
 // CIRCULAR PROGRESS COMPONENT
@@ -253,7 +285,7 @@ const CircularProgress = ({ value, color, size = 112, strokeWidth = 8, children 
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.05)"
+          stroke="rgba(255,255,255,0.1)"
           strokeWidth={strokeWidth}
         />
         <circle
@@ -288,32 +320,21 @@ const CircularProgress = ({ value, color, size = 112, strokeWidth = 8, children 
 };
 
 // ============================================================================
-// INLINE COMPONENTS
+// STYLED COMPONENTS
 // ============================================================================
-const BubbleCard = ({ children, glowColor = "cyan" }) => {
-  const glowColors = {
-    cyan: "0 0 30px rgba(0,240,255,0.4)",
-    purple: "0 0 30px rgba(168,85,247,0.4)",
-    pink: "0 0 30px rgba(255,0,128,0.4)",
-    green: "0 0 30px rgba(0,255,136,0.4)",
-    yellow: "0 0 30px rgba(251,191,36,0.4)",
-  };
-
-  return (
-    <div
-      style={{
-        background: '#ffffff',
-        border: '2px solid #e0e0e0',
-        borderRadius: '2rem',
-        padding: '2rem',
-        boxShadow: glowColors[glowColor],
-        transition: 'all 0.5s ease-out',
-      }}
-    >
-      {children}
-    </div>
-  );
-};
+const GlassCard = ({ children }) => (
+  <div style={{
+    background: 'rgba(139, 92, 246, 0.1)',
+    backdropFilter: 'blur(10px)',
+    border: '2px solid rgba(168, 85, 247, 0.3)',
+    borderRadius: '2rem',
+    padding: '2rem',
+    boxShadow: '0 8px 32px rgba(147, 51, 234, 0.3)',
+    transition: 'all 0.3s ease',
+  }}>
+    {children}
+  </div>
+);
 
 const BubbleProgress = ({ trait }) => {
   const Icon = trait.icon;
@@ -332,8 +353,8 @@ const BubbleProgress = ({ trait }) => {
           {trait.current}%
         </p>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
-          <ArrowUpRight style={{ width: 16, height: 16, color: '#00ff88' }} />
-          <span style={{ fontSize: '0.75rem', color: '#00ff88', fontWeight: '600' }}>+{growth}%</span>
+          <ArrowUpRight style={{ width: 16, height: 16, color: '#a855f7' }} />
+          <span style={{ fontSize: '0.75rem', color: '#a855f7', fontWeight: '600' }}>+{growth}%</span>
         </div>
       </div>
     </div>
@@ -357,8 +378,8 @@ const FutureBubbleProgress = ({ trait }) => {
           {trait.future}%
         </p>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
-          <Sparkles style={{ width: 16, height: 16, color: '#00f0ff' }} />
-          <span style={{ fontSize: '0.75rem', color: '#00f0ff', fontWeight: '600' }}>+{growth}%</span>
+          <Sparkles style={{ width: 16, height: 16, color: '#d946ef' }} />
+          <span style={{ fontSize: '0.75rem', color: '#d946ef', fontWeight: '600' }}>+{growth}%</span>
         </div>
       </div>
     </div>
@@ -372,11 +393,11 @@ const SkillBubbleBar = ({ skill }) => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#fff' }}>{skill.name}</span>
-        <span style={{ fontSize: '0.75rem', color: '#999' }}>
+        <span style={{ fontSize: '0.75rem', color: '#c084fc' }}>
           {skill.xp} / {skill.maxXp} XP
         </span>
       </div>
-      <div style={{ position: 'relative', height: '1.25rem', background: '#2a2a3e', borderRadius: '9999px', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: '1.25rem', background: 'rgba(168, 85, 247, 0.2)', borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
         <div
           style={{
             height: '100%',
@@ -392,7 +413,7 @@ const SkillBubbleBar = ({ skill }) => {
         <span style={{ color: skill.color, fontWeight: 'bold' }}>
           Level {skill.level}
         </span>
-        <span style={{ color: '#999', fontWeight: '600' }}>
+        <span style={{ color: '#c084fc', fontWeight: '600' }}>
           {Math.round(percentage)}%
         </span>
       </div>
@@ -447,7 +468,7 @@ const Confetti = () => {
               width: '12px',
               height: '12px',
               borderRadius: '50%',
-              background: ['#00f0ff', '#a855f7', '#ff0080', '#00ff88', '#fbbf24'][Math.floor(Math.random() * 5)],
+              background: ['#a855f7', '#c084fc', '#d946ef', '#9333ea', '#e879f9'][Math.floor(Math.random() * 5)],
               left: `${Math.random() * 100}%`,
               animation: `fall ${Math.random() * 2 + 2}s linear ${Math.random() * 0.5}s forwards`,
             }}
@@ -470,11 +491,11 @@ const StatBubble = ({ icon: Icon, value, label, color }) => {
         flexDirection: 'column',
         alignItems: 'center',
         gap: '0.5rem',
-        background: 'rgba(26, 26, 46, 0.5)',
+        background: 'rgba(139, 92, 246, 0.2)',
         backdropFilter: 'blur(10px)',
         borderRadius: '1.5rem',
         padding: '1rem',
-        border: '2px solid #333',
+        border: '2px solid rgba(168, 85, 247, 0.4)',
         minWidth: '100px',
         cursor: 'pointer',
         transition: 'transform 0.2s',
@@ -498,7 +519,7 @@ const StatBubble = ({ icon: Icon, value, label, color }) => {
       <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color }}>
         {value}
       </span>
-      <span style={{ fontSize: '0.75rem', color: '#999', textAlign: 'center' }}>{label}</span>
+      <span style={{ fontSize: '0.75rem', color: '#c084fc', textAlign: 'center' }}>{label}</span>
     </div>
   );
 };
@@ -527,57 +548,64 @@ export default function ProfileView() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'transparent', color: '#fff', overflowX: 'hidden', paddingBottom: '2rem' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #581c87, #6b21a8, #4c1d95)', color: '#fff', overflowX: 'hidden', paddingBottom: '2rem', position: 'relative' }}>
+      <ParticleBackground />
       {showConfetti && <Confetti />}
 
       {/* Header */}
       <header style={{
-        borderBottom: '2px solid #333',
-        background: 'rgba(26, 26, 46, 0.8)',
+        borderBottom: '2px solid rgba(168, 85, 247, 0.3)',
+        background: 'rgba(88, 28, 135, 0.6)',
         backdropFilter: 'blur(10px)',
         position: 'sticky',
         top: 0,
         zIndex: 40,
         borderRadius: '0 0 1.5rem 1.5rem',
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative', zIndex: 10 }}>
           <div style={{ textAlign: 'center' }}>
+            <div className="inline-flex items-center gap-2 mb-3 px-4 py-2 bg-purple-800/40 backdrop-blur-sm rounded-full border border-purple-500/30" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', padding: '0.5rem 1rem', background: 'rgba(107, 33, 168, 0.4)', backdropFilter: 'blur(4px)', borderRadius: '9999px', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
+              <Sparkles style={{ width: 16, height: 16, color: '#c084fc' }} />
+              <span style={{ fontSize: '0.875rem', fontWeight: '500', color: '#e9d5ff' }}>Social Skills Mastery Platform</span>
+            </div>
+            
             <h1 style={{
-              fontSize: '2rem',
+              fontSize: '2.5rem',
               fontWeight: 'bold',
-              background: 'linear-gradient(90deg, #00f0ff, #a855f7, #ff0080)',
+              background: 'linear-gradient(90deg, #e9d5ff, #f0abfc, #e9d5ff)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
               margin: 0,
+              marginBottom: '0.5rem',
             }}>
               Social Growth Journey
             </h1>
-            <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
-              Track your transformation
+            <p style={{ fontSize: '0.875rem', color: '#c084fc', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+              Track your transformation and unlock your potential
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <StatBubble icon={Flame} value={currentStreak} label="Streak" color="#ff0080" />
-            <StatBubble icon={Zap} value={totalXp.toLocaleString()} label="XP" color="#00f0ff" />
-            <StatBubble icon={Trophy} value={totalActions} label="Actions" color="#00ff88" />
+            <StatBubble icon={Flame} value={currentStreak} label="Streak" color="#d946ef" />
+            <StatBubble icon={Zap} value={totalXp.toLocaleString()} label="XP" color="#a855f7" />
+            <StatBubble icon={Trophy} value={totalActions} label="Actions" color="#c084fc" />
           </div>
         </div>
       </header>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', gap: '2rem', position: 'relative', zIndex: 10 }}>
         {/* SECTION 1: CURRENT VS FUTURE SELF */}
         <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
           {/* Current Self */}
-          <BubbleCard glowColor="purple">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                     <Users style={{ width: 24, height: 24 }} />
                     Current Self
                   </h2>
-                  <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                  <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                     Where you are today
                   </p>
                 </div>
@@ -586,9 +614,9 @@ export default function ProfileView() {
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(168, 85, 247, 0.1)', borderRadius: '1.5rem', padding: '1rem', border: '2px solid rgba(168, 85, 247, 0.3)' }}>
-                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0 }}>
-                  <strong style={{ color: '#a855f7' }}>Personality:</strong>{" "}
+              <div style={{ background: 'rgba(168, 85, 247, 0.15)', borderRadius: '1.5rem', padding: '1rem', border: '2px solid rgba(168, 85, 247, 0.4)' }}>
+                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0, color: '#e9d5ff' }}>
+                  <strong style={{ color: '#c084fc' }}>Personality:</strong>{" "}
                   You're consistent but shy in new groups. You prefer one-on-one conversations and excel at listening.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
@@ -597,11 +625,11 @@ export default function ProfileView() {
                       key={trait}
                       style={{
                         padding: '0.375rem 0.75rem',
-                        background: 'rgba(168, 85, 247, 0.2)',
-                        color: '#a855f7',
+                        background: 'rgba(168, 85, 247, 0.3)',
+                        color: '#e9d5ff',
                         fontSize: '0.75rem',
                         borderRadius: '9999px',
-                        border: '2px solid rgba(168, 85, 247, 0.3)',
+                        border: '2px solid rgba(168, 85, 247, 0.5)',
                         fontWeight: '600',
                       }}
                     >
@@ -612,8 +640,8 @@ export default function ProfileView() {
               </div>
 
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.5rem 0' }}>
-                  <TrendingUp style={{ width: 20, height: 20, color: '#a855f7' }} />
+                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.5rem 0', color: '#e9d5ff' }}>
+                  <TrendingUp style={{ width: 20, height: 20, color: '#c084fc' }} />
                   Your Skills Today
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '1.5rem' }}>
@@ -624,36 +652,36 @@ export default function ProfileView() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
-                <div style={{ background: 'rgba(0, 255, 136, 0.1)', borderRadius: '1rem', padding: '1rem', border: '2px solid rgba(0, 255, 136, 0.3)' }}>
-                  <Award style={{ width: 24, height: 24, color: '#00ff88', marginBottom: '0.5rem' }} />
-                  <p style={{ fontSize: '0.75rem', color: '#999', margin: 0 }}>Strongest</p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#00ff88', marginTop: '0.25rem', margin: '0.25rem 0' }}>
+                <div style={{ background: 'rgba(192, 132, 252, 0.15)', borderRadius: '1rem', padding: '1rem', border: '2px solid rgba(192, 132, 252, 0.4)' }}>
+                  <Award style={{ width: 24, height: 24, color: '#c084fc', marginBottom: '0.5rem' }} />
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', margin: 0 }}>Strongest</p>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#c084fc', marginTop: '0.25rem', margin: '0.25rem 0' }}>
                     Listening
                   </p>
-                  <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#00ff88', margin: 0 }}>70%</p>
+                  <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#c084fc', margin: 0 }}>70%</p>
                 </div>
-                <div style={{ background: 'rgba(255, 0, 128, 0.1)', borderRadius: '1rem', padding: '1rem', border: '2px solid rgba(255, 0, 128, 0.3)' }}>
-                  <Target style={{ width: 24, height: 24, color: '#ff0080', marginBottom: '0.5rem' }} />
-                  <p style={{ fontSize: '0.75rem', color: '#999', margin: 0 }}>Focus Area</p>
-                  <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#ff0080', marginTop: '0.25rem', margin: '0.25rem 0' }}>
+                <div style={{ background: 'rgba(217, 70, 239, 0.15)', borderRadius: '1rem', padding: '1rem', border: '2px solid rgba(217, 70, 239, 0.4)' }}>
+                  <Target style={{ width: 24, height: 24, color: '#d946ef', marginBottom: '0.5rem' }} />
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', margin: 0 }}>Focus Area</p>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#d946ef', marginTop: '0.25rem', margin: '0.25rem 0' }}>
                     Confidence
                   </p>
-                  <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#ff0080', margin: 0 }}>35%</p>
+                  <p style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#d946ef', margin: 0 }}>35%</p>
                 </div>
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
 
           {/* Future Self */}
-          <BubbleCard glowColor="cyan">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
-                  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#00f0ff', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                  <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e879f9', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                     <Sparkles style={{ width: 24, height: 24 }} />
                     Future Self
                   </h2>
-                  <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                  <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                     Your transformation
                   </p>
                 </div>
@@ -662,9 +690,9 @@ export default function ProfileView() {
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(0, 240, 255, 0.1)', borderRadius: '1.5rem', padding: '1rem', border: '2px solid rgba(0, 240, 255, 0.4)' }}>
-                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0 }}>
-                  <strong style={{ color: '#00f0ff' }}>Projection:</strong> Based on your streak and XP, you're becoming a natural connector. You'll confidently start conversations and build meaningful relationships.
+              <div style={{ background: 'rgba(232, 121, 249, 0.15)', borderRadius: '1.5rem', padding: '1rem', border: '2px solid rgba(232, 121, 249, 0.4)' }}>
+                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0, color: '#e9d5ff' }}>
+                  <strong style={{ color: '#e879f9' }}>Projection:</strong> Based on your streak and XP, you're becoming a natural connector. You'll confidently start conversations and build meaningful relationships.
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
                   {ARCHETYPES[futureArchetype].traits.map((trait) => (
@@ -672,11 +700,11 @@ export default function ProfileView() {
                       key={trait}
                       style={{
                         padding: '0.375rem 0.75rem',
-                        background: 'rgba(0, 240, 255, 0.2)',
-                        color: '#00f0ff',
+                        background: 'rgba(232, 121, 249, 0.3)',
+                        color: '#fae8ff',
                         fontSize: '0.75rem',
                         borderRadius: '9999px',
-                        border: '2px solid rgba(0, 240, 255, 0.4)',
+                        border: '2px solid rgba(232, 121, 249, 0.5)',
                         fontWeight: '600',
                       }}
                     >
@@ -687,8 +715,8 @@ export default function ProfileView() {
               </div>
 
               <div>
-                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.5rem 0' }}>
-                  <ArrowRight style={{ width: 20, height: 20, color: '#00f0ff' }} />
+                <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: '0 0 1.5rem 0', color: '#e9d5ff' }}>
+                  <ArrowRight style={{ width: 20, height: 20, color: '#e879f9' }} />
                   Projected Growth
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '1.5rem' }}>
@@ -699,7 +727,7 @@ export default function ProfileView() {
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#999', margin: 0 }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#e9d5ff', margin: 0 }}>
                   Suggested New Habits
                 </p>
                 {[
@@ -714,31 +742,32 @@ export default function ProfileView() {
                       alignItems: 'flex-start',
                       gap: '0.5rem',
                       fontSize: '0.875rem',
-                      background: 'rgba(0, 240, 255, 0.1)',
+                      background: 'rgba(232, 121, 249, 0.15)',
                       padding: '0.75rem',
                       borderRadius: '1rem',
-                      border: '2px solid rgba(0, 240, 255, 0.3)',
+                      border: '2px solid rgba(232, 121, 249, 0.4)',
+                      color: '#e9d5ff',
                     }}
                   >
-                    <CheckCircle style={{ width: 16, height: 16, color: '#00f0ff', marginTop: '0.125rem', flexShrink: 0 }} />
+                    <CheckCircle style={{ width: 16, height: 16, color: '#e879f9', marginTop: '0.125rem', flexShrink: 0 }} />
                     <span>{habit}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 2: SOCIAL TRAIT PROGRESSION */}
         <section>
-          <BubbleCard glowColor="pink">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ff0080', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#d946ef', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Activity style={{ width: 24, height: 24 }} />
                   Skill Progression
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   Track your XP and levels
                 </p>
               </div>
@@ -748,19 +777,28 @@ export default function ProfileView() {
                   <div
                     key={skill.name}
                     style={{
-                      background: 'rgba(42, 42, 62, 0.4)',
+                      background: 'rgba(139, 92, 246, 0.15)',
                       borderRadius: '1.5rem',
                       padding: '1.25rem',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: '1rem',
-                      border: '2px solid #333',
-                      transition: 'border-color 0.3s',
+                      border: '2px solid rgba(168, 85, 247, 0.3)',
+                      transition: 'border-color 0.3s, transform 0.3s',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.6)';
+                      e.currentTarget.style.transform = 'translateY(-4px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)';
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     <SkillBubbleBar skill={skill} />
                     <div>
-                      <p style={{ fontSize: '0.75rem', color: '#999', marginBottom: '0.5rem', margin: '0 0 0.5rem 0' }}>
+                      <p style={{ fontSize: '0.75rem', color: '#c084fc', marginBottom: '0.5rem', margin: '0 0 0.5rem 0' }}>
                         Weekly Progress
                       </p>
                       <MiniTrendChart data={skill.trend} color={skill.color} />
@@ -769,19 +807,19 @@ export default function ProfileView() {
                 ))}
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 3: GROWTH TRAJECTORY */}
         <section>
-          <BubbleCard glowColor="green">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#00ff88', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <TrendingUp style={{ width: 24, height: 24 }} />
                   Growth Milestones
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   From Beginner to Advanced
                 </p>
               </div>
@@ -793,11 +831,11 @@ export default function ProfileView() {
                   left: 0,
                   right: 0,
                   height: '8px',
-                  background: 'linear-gradient(90deg, #a855f7, #00f0ff, #00ff88)',
+                  background: 'linear-gradient(90deg, #a855f7, #c084fc, #d946ef)',
                   borderRadius: '9999px',
                   transform: 'translateY(-50%)',
                 }} />
-                <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                   {MILESTONES.map((milestone) => (
                     <div
                       key={milestone.id}
@@ -807,6 +845,8 @@ export default function ProfileView() {
                         alignItems: 'center',
                         gap: '0.5rem',
                         zIndex: 10,
+                        flex: '1 1 auto',
+                        minWidth: '120px',
                       }}
                     >
                       <div
@@ -818,30 +858,31 @@ export default function ProfileView() {
                           alignItems: 'center',
                           justifyContent: 'center',
                           border: '4px solid',
-                          borderColor: milestone.completed ? '#00ff88' : '#666',
-                          background: milestone.completed ? '#00ff88' : '#2a2a3e',
+                          borderColor: milestone.completed ? '#c084fc' : 'rgba(168, 85, 247, 0.3)',
+                          background: milestone.completed ? '#c084fc' : 'rgba(139, 92, 246, 0.2)',
                           cursor: 'pointer',
                           transition: 'transform 0.2s',
+                          boxShadow: milestone.completed ? '0 0 20px rgba(192, 132, 252, 0.5)' : 'none',
                         }}
                       >
                         {milestone.completed ? (
-                          <CheckCircle style={{ width: 32, height: 32, color: '#0f0f1e' }} />
+                          <CheckCircle style={{ width: 32, height: 32, color: '#581c87' }} />
                         ) : (
-                          <div style={{ width: 16, height: 16, borderRadius: '50%', background: '#666' }} />
+                          <div style={{ width: 16, height: 16, borderRadius: '50%', background: 'rgba(192, 132, 252, 0.5)' }} />
                         )}
                       </div>
                       <div style={{
                         textAlign: 'center',
-                        background: '#1a1a2e',
+                        background: 'rgba(139, 92, 246, 0.2)',
                         padding: '0.5rem 0.75rem',
                         borderRadius: '1rem',
-                        border: '2px solid #333',
+                        border: '2px solid rgba(168, 85, 247, 0.3)',
                         minWidth: '100px',
                       }}>
-                        <p style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: 0 }}>
+                        <p style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: 0, color: '#e9d5ff' }}>
                           {milestone.name}
                         </p>
-                        <p style={{ fontSize: '0.7rem', color: '#999', margin: 0 }}>
+                        <p style={{ fontSize: '0.7rem', color: '#c084fc', margin: 0 }}>
                           {milestone.date}
                         </p>
                       </div>
@@ -851,41 +892,41 @@ export default function ProfileView() {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
-                <div style={{ textAlign: 'center', background: 'rgba(168, 85, 247, 0.1)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(168, 85, 247, 0.3)' }}>
+                <div style={{ textAlign: 'center', background: 'rgba(168, 85, 247, 0.15)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(168, 85, 247, 0.4)' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🌱</div>
-                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#a855f7', margin: 0 }}>Beginner</p>
-                  <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>0-2000 XP</p>
+                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#c084fc', margin: 0 }}>Beginner</p>
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>0-2000 XP</p>
                 </div>
-                <div style={{ textAlign: 'center', background: 'rgba(0, 240, 255, 0.1)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(0, 240, 255, 0.4)' }}>
+                <div style={{ textAlign: 'center', background: 'rgba(192, 132, 252, 0.2)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(192, 132, 252, 0.5)' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🚀</div>
-                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#00f0ff', margin: 0 }}>Intermediate</p>
-                  <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#e879f9', margin: 0 }}>Intermediate</p>
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                     2000-5000 XP
                   </p>
-                  <div style={{ marginTop: '0.5rem', padding: '0.375rem 0.75rem', background: 'rgba(0, 240, 255, 0.3)', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold', color: '#00f0ff' }}>
+                  <div style={{ marginTop: '0.5rem', padding: '0.375rem 0.75rem', background: 'rgba(232, 121, 249, 0.3)', borderRadius: '9999px', fontSize: '0.75rem', fontWeight: 'bold', color: '#fae8ff' }}>
                     YOU ARE HERE
                   </div>
                 </div>
-                <div style={{ textAlign: 'center', background: 'rgba(102, 102, 102, 0.3)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(102, 102, 102, 0.3)' }}>
+                <div style={{ textAlign: 'center', background: 'rgba(139, 92, 246, 0.15)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(168, 85, 247, 0.3)' }}>
                   <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🏆</div>
-                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#fff', margin: 0 }}>Advanced</p>
-                  <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>5000+ XP</p>
+                  <p style={{ fontSize: '1rem', fontWeight: 'bold', color: '#e9d5ff', margin: 0 }}>Advanced</p>
+                  <p style={{ fontSize: '0.75rem', color: '#c084fc', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>5000+ XP</p>
                 </div>
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 4: ACTION ANALYSIS */}
         <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          <BubbleCard glowColor="cyan">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#00f0ff', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <BarChart3 style={{ width: 20, height: 20 }} />
                   Action Frequency
                 </h2>
-                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   Most impactful this month
                 </p>
               </div>
@@ -893,26 +934,27 @@ export default function ProfileView() {
               <div style={{ height: '256px' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={MOCK_FREQUENCY_DATA}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(168, 85, 247, 0.2)" />
                     <XAxis
                       dataKey="action"
-                      tick={{ fill: '#999', fontSize: 10 }}
+                      tick={{ fill: '#c084fc', fontSize: 10 }}
                       angle={-45}
                       textAnchor="end"
                       height={60}
                     />
-                    <YAxis tick={{ fill: '#999', fontSize: 10 }} />
+                    <YAxis tick={{ fill: '#c084fc', fontSize: 10 }} />
                     <Tooltip
                       contentStyle={{
-                        background: '#1a1a2e',
-                        border: '2px solid #00f0ff',
+                        background: 'rgba(88, 28, 135, 0.9)',
+                        border: '2px solid rgba(168, 85, 247, 0.5)',
                         borderRadius: '1rem',
                         fontSize: '12px',
+                        color: '#e9d5ff',
                       }}
                     />
                     <Bar
                       dataKey="count"
-                      fill="#00f0ff"
+                      fill="#a855f7"
                       radius={[15, 15, 0, 0]}
                       animationDuration={1200}
                     />
@@ -920,23 +962,23 @@ export default function ProfileView() {
                 </ResponsiveContainer>
               </div>
 
-              <div style={{ background: 'rgba(0, 240, 255, 0.1)', padding: '1rem', borderRadius: '1rem', border: '2px solid rgba(0, 240, 255, 0.3)' }}>
-                <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                  <strong style={{ color: '#00f0ff' }}>Insight:</strong> You complimented friends{" "}
-                  <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>12 times</span> this month - incredible empathy!
+              <div style={{ background: 'rgba(168, 85, 247, 0.15)', padding: '1rem', borderRadius: '1rem', border: '2px solid rgba(168, 85, 247, 0.4)' }}>
+                <p style={{ fontSize: '0.875rem', margin: 0, color: '#e9d5ff' }}>
+                  <strong style={{ color: '#c084fc' }}>Insight:</strong> You complimented friends{" "}
+                  <span style={{ color: '#e879f9', fontWeight: 'bold' }}>12 times</span> this month - incredible empathy!
                 </p>
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
 
-          <BubbleCard glowColor="purple">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Calendar style={{ width: 20, height: 20 }} />
                   Recent Actions
                 </h2>
-                <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   Latest social wins
                 </p>
               </div>
@@ -946,31 +988,40 @@ export default function ProfileView() {
                   <div
                     key={action.id}
                     style={{
-                      background: 'rgba(42, 42, 62, 0.4)',
+                      background: 'rgba(139, 92, 246, 0.15)',
                       padding: '0.75rem',
                       borderRadius: '1rem',
-                      border: '2px solid #333',
-                      transition: 'border-color 0.3s',
+                      border: '2px solid rgba(168, 85, 247, 0.3)',
+                      transition: 'border-color 0.3s, transform 0.2s',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.6)';
+                      e.currentTarget.style.transform = 'translateX(4px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)';
+                      e.currentTarget.style.transform = 'translateX(0)';
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontSize: '0.875rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+                        <p style={{ fontSize: '0.875rem', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0, color: '#e9d5ff' }}>
                           {action.action}
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.75rem', color: '#999' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#c084fc' }}>
                             {action.date}
                           </span>
-                          <span style={{ fontSize: '0.75rem', padding: '0.125rem 0.5rem', background: 'rgba(168, 85, 247, 0.2)', color: '#a855f7', borderRadius: '9999px' }}>
+                          <span style={{ fontSize: '0.75rem', padding: '0.125rem 0.5rem', background: 'rgba(168, 85, 247, 0.3)', color: '#e879f9', borderRadius: '9999px' }}>
                             {action.skill}
                           </span>
                         </div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem', flexShrink: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Zap style={{ width: 12, height: 12, color: '#00f0ff' }} />
-                          <span style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#00f0ff' }}>
+                          <Zap style={{ width: 12, height: 12, color: '#a855f7' }} />
+                          <span style={{ fontSize: '0.875rem', fontWeight: 'bold', color: '#a855f7' }}>
                             +{action.xp}
                           </span>
                         </div>
@@ -980,8 +1031,8 @@ export default function ProfileView() {
                             padding: '0.125rem 0.5rem',
                             borderRadius: '9999px',
                             fontWeight: '600',
-                            background: action.difficulty === "Hard" ? 'rgba(255, 0, 128, 0.2)' : action.difficulty === "Medium" ? 'rgba(0, 240, 255, 0.2)' : 'rgba(0, 255, 136, 0.2)',
-                            color: action.difficulty === "Hard" ? '#ff0080' : action.difficulty === "Medium" ? '#00f0ff' : '#00ff88',
+                            background: action.difficulty === "Hard" ? 'rgba(217, 70, 239, 0.3)' : action.difficulty === "Medium" ? 'rgba(168, 85, 247, 0.3)' : 'rgba(192, 132, 252, 0.3)',
+                            color: action.difficulty === "Hard" ? '#f0abfc' : action.difficulty === "Medium" ? '#e879f9' : '#e9d5ff',
                           }}
                         >
                           {action.difficulty}
@@ -992,19 +1043,19 @@ export default function ProfileView() {
                 ))}
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 5: SOCIAL ARCHETYPE */}
         <section>
-          <BubbleCard glowColor="pink">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#ff0080', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#d946ef', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Star style={{ width: 24, height: 24 }} />
                   Your Archetype
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   Evolving social personality
                 </p>
               </div>
@@ -1014,17 +1065,17 @@ export default function ProfileView() {
                   <div style={{ fontSize: '3.75rem', marginBottom: '1rem' }}>
                     {ARCHETYPES[currentArchetype].icon}
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#a855f7', margin: 0 }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#c084fc', margin: 0 }}>
                     {ARCHETYPES[currentArchetype].name}
                   </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                     Current Type
                   </p>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <ArrowRight style={{ width: 32, height: 32, color: '#00f0ff' }} />
-                  <div style={{ fontSize: '0.75rem', color: '#999' }}>
+                  <ArrowRight style={{ width: 32, height: 32, color: '#e879f9' }} />
+                  <div style={{ fontSize: '0.75rem', color: '#c084fc' }}>
                     Evolving
                   </div>
                 </div>
@@ -1033,18 +1084,18 @@ export default function ProfileView() {
                   <div style={{ fontSize: '3.75rem', marginBottom: '1rem' }}>
                     {ARCHETYPES[futureArchetype].icon}
                   </div>
-                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#00f0ff', margin: 0 }}>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#e879f9', margin: 0 }}>
                     {ARCHETYPES[futureArchetype].name}
                   </h3>
-                  <p style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                  <p style={{ fontSize: '0.75rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                     Future Type
                   </p>
                 </div>
               </div>
 
-              <div style={{ background: 'rgba(255, 0, 128, 0.1)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(255, 0, 128, 0.3)' }}>
-                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0 }}>
-                  <strong style={{ color: '#ff0080' }}>Evolution Path:</strong> As an Observer, you're thoughtful and analytical. You're transforming into a Connector - someone who brings people together naturally!
+              <div style={{ background: 'rgba(217, 70, 239, 0.15)', padding: '1.5rem', borderRadius: '1.5rem', border: '2px solid rgba(217, 70, 239, 0.4)' }}>
+                <p style={{ fontSize: '0.875rem', lineHeight: '1.6', margin: 0, color: '#e9d5ff' }}>
+                  <strong style={{ color: '#d946ef' }}>Evolution Path:</strong> As an Observer, you're thoughtful and analytical. You're transforming into a Connector - someone who brings people together naturally!
                 </p>
               </div>
 
@@ -1057,8 +1108,8 @@ export default function ProfileView() {
                       padding: '1rem',
                       borderRadius: '1rem',
                       border: '2px solid',
-                      borderColor: currentArchetype === key ? '#ff0080' : '#333',
-                      background: currentArchetype === key ? 'rgba(255, 0, 128, 0.2)' : 'rgba(42, 42, 62, 0.3)',
+                      borderColor: currentArchetype === key ? '#d946ef' : 'rgba(168, 85, 247, 0.3)',
+                      background: currentArchetype === key ? 'rgba(217, 70, 239, 0.2)' : 'rgba(139, 92, 246, 0.15)',
                       cursor: 'pointer',
                       transition: 'all 0.3s',
                       transform: currentArchetype === key ? 'scale(1.05)' : 'scale(1)',
@@ -1066,24 +1117,24 @@ export default function ProfileView() {
                     }}
                   >
                     <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{archetype.icon}</div>
-                    <p style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: 0 }}>{archetype.name}</p>
+                    <p style={{ fontSize: '0.75rem', fontWeight: 'bold', margin: 0, color: currentArchetype === key ? '#fae8ff' : '#e9d5ff' }}>{archetype.name}</p>
                   </div>
                 ))}
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 6: CHALLENGES */}
         <section>
-          <BubbleCard glowColor="cyan">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#00f0ff', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Target style={{ width: 24, height: 24 }} />
                   Active Challenges
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   Complete to level up faster
                 </p>
               </div>
@@ -1096,8 +1147,8 @@ export default function ProfileView() {
                       padding: '1.25rem',
                       borderRadius: '1.5rem',
                       border: '2px solid',
-                      borderColor: completedChallenges.includes(idx) ? '#00ff88' : '#333',
-                      background: completedChallenges.includes(idx) ? 'rgba(0, 255, 136, 0.2)' : 'rgba(42, 42, 62, 0.3)',
+                      borderColor: completedChallenges.includes(idx) ? '#c084fc' : 'rgba(168, 85, 247, 0.3)',
+                      background: completedChallenges.includes(idx) ? 'rgba(192, 132, 252, 0.2)' : 'rgba(139, 92, 246, 0.15)',
                       transition: 'all 0.3s',
                     }}
                   >
@@ -1105,22 +1156,22 @@ export default function ProfileView() {
                       <div style={{ fontSize: '2.5rem' }}>{challenge.badge}</div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <Zap style={{ width: 16, height: 16, color: '#00f0ff' }} />
-                          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: '#00f0ff' }}>
+                          <Zap style={{ width: 16, height: 16, color: '#a855f7' }} />
+                          <span style={{ fontSize: '1rem', fontWeight: 'bold', color: '#a855f7' }}>
                             +{challenge.xp}
                           </span>
                         </div>
                         {challenge.streak > 0 && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>
-                            <Flame style={{ width: 12, height: 12, color: '#ff0080' }} />
-                            <span style={{ fontSize: '0.75rem', color: '#ff0080', fontWeight: '600' }}>
+                            <Flame style={{ width: 12, height: 12, color: '#d946ef' }} />
+                            <span style={{ fontSize: '0.75rem', color: '#d946ef', fontWeight: '600' }}>
                               {challenge.streak} days
                             </span>
                           </div>
                         )}
                       </div>
                     </div>
-                    <p style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.75rem', margin: '0 0 0.75rem 0' }}>
+                    <p style={{ fontSize: '0.875rem', fontWeight: '600', marginBottom: '0.75rem', margin: '0 0 0.75rem 0', color: '#e9d5ff' }}>
                       {challenge.title}
                     </p>
                     <button
@@ -1134,8 +1185,8 @@ export default function ProfileView() {
                         fontSize: '1rem',
                         transition: 'all 0.3s',
                         cursor: completedChallenges.includes(idx) ? 'default' : 'pointer',
-                        background: completedChallenges.includes(idx) ? 'rgba(0, 255, 136, 0.3)' : '#00f0ff',
-                        color: completedChallenges.includes(idx) ? '#00ff88' : '#0f0f1e',
+                        background: completedChallenges.includes(idx) ? 'rgba(192, 132, 252, 0.3)' : 'linear-gradient(90deg, #a855f7, #c084fc)',
+                        color: '#fff',
                         border: 'none',
                       }}
                     >
@@ -1145,19 +1196,19 @@ export default function ProfileView() {
                 ))}
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 7: TIMELINE */}
         <section>
-          <BubbleCard glowColor="purple">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Sparkles style={{ width: 24, height: 24 }} />
                   Your Story
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   The narrative of your transformation
                 </p>
               </div>
@@ -1169,7 +1220,7 @@ export default function ProfileView() {
                   top: 0,
                   bottom: 0,
                   width: '6px',
-                  background: 'linear-gradient(180deg, #a855f7, #00f0ff, #00ff88)',
+                  background: 'linear-gradient(180deg, #a855f7, #c084fc, #d946ef)',
                   borderRadius: '9999px',
                 }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingLeft: '5rem' }}>
@@ -1190,20 +1241,20 @@ export default function ProfileView() {
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: '1.5rem',
-                          border: '4px solid #0f0f1e',
+                          border: '4px solid rgba(88, 28, 135, 0.8)',
                           background: event.color,
-                          boxShadow: `0 0 20px ${event.color}`,
+                          boxShadow: `0 0 20px ${event.color}80`,
                         }}
                       >
                         {event.icon}
                       </div>
                       <div
                         style={{
-                          background: 'rgba(42, 42, 62, 0.4)',
+                          background: 'rgba(139, 92, 246, 0.15)',
                           padding: '1rem',
                           borderRadius: '1rem',
-                          border: '2px solid #333',
-                          transition: 'border-color 0.3s',
+                          border: '2px solid rgba(168, 85, 247, 0.3)',
+                          transition: 'all 0.3s',
                         }}
                       >
                         <h3
@@ -1217,7 +1268,7 @@ export default function ProfileView() {
                         >
                           {event.stage}
                         </h3>
-                        <p style={{ fontSize: '0.875rem', color: '#999', margin: 0 }}>
+                        <p style={{ fontSize: '0.875rem', color: '#e9d5ff', margin: 0 }}>
                           {event.description}
                         </p>
                       </div>
@@ -1226,100 +1277,100 @@ export default function ProfileView() {
                 </div>
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 8: BENCHMARKS */}
         <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
-          <BubbleCard glowColor="green">
+          <GlassCard>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ fontSize: '3rem' }}>📊</div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#00ff88', margin: 0 }}>vs. Average</h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00ff88' }}>+28%</div>
-              <p style={{ fontSize: '0.75rem', color: '#999', margin: 0 }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#c084fc', margin: 0 }}>vs. Average</h3>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#c084fc' }}>+28%</div>
+              <p style={{ fontSize: '0.75rem', color: '#e9d5ff', margin: 0 }}>
                 Ahead of most learners
               </p>
-              <div style={{ height: '12px', background: '#2a2a3e', borderRadius: '9999px', overflow: 'hidden' }}>
+              <div style={{ height: '12px', background: 'rgba(168, 85, 247, 0.2)', borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
                 <div
                   style={{
                     height: '100%',
                     width: '78%',
-                    background: 'linear-gradient(90deg, #00ff88, #00f0ff)',
+                    background: 'linear-gradient(90deg, #c084fc, #a855f7)',
                     borderRadius: '9999px',
                     transition: 'width 1s ease-out 0.5s',
                   }}
                 />
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
 
-          <BubbleCard glowColor="cyan">
+          <GlassCard>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ fontSize: '3rem' }}>📈</div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#00f0ff', margin: 0 }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#a855f7', margin: 0 }}>
                 vs. Last Month
               </h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00f0ff' }}>+45%</div>
-              <p style={{ fontSize: '0.75rem', color: '#999', margin: 0 }}>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#a855f7' }}>+45%</div>
+              <p style={{ fontSize: '0.75rem', color: '#e9d5ff', margin: 0 }}>
                 Growth accelerating
               </p>
-              <div style={{ height: '12px', background: '#2a2a3e', borderRadius: '9999px', overflow: 'hidden' }}>
+              <div style={{ height: '12px', background: 'rgba(168, 85, 247, 0.2)', borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
                 <div
                   style={{
                     height: '100%',
                     width: '100%',
-                    background: 'linear-gradient(90deg, #00f0ff, #ff0080)',
+                    background: 'linear-gradient(90deg, #a855f7, #d946ef)',
                     borderRadius: '9999px',
                     transition: 'width 1s ease-out 0.7s',
                   }}
                 />
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
 
-          <BubbleCard glowColor="pink">
+          <GlassCard>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ fontSize: '3rem' }}>🎯</div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#ff0080', margin: 0 }}>Percentile</h3>
-              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#ff0080' }}>Top 15%</div>
-              <p style={{ fontSize: '0.75rem', color: '#999', margin: 0 }}>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#d946ef', margin: 0 }}>Percentile</h3>
+              <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#d946ef' }}>Top 15%</div>
+              <p style={{ fontSize: '0.75rem', color: '#e9d5ff', margin: 0 }}>
                 Among all users
               </p>
-              <div style={{ height: '12px', background: '#2a2a3e', borderRadius: '9999px', overflow: 'hidden' }}>
+              <div style={{ height: '12px', background: 'rgba(168, 85, 247, 0.2)', borderRadius: '9999px', overflow: 'hidden', border: '1px solid rgba(168, 85, 247, 0.3)' }}>
                 <div
                   style={{
                     height: '100%',
                     width: '85%',
-                    background: 'linear-gradient(90deg, #ff0080, #a855f7)',
+                    background: 'linear-gradient(90deg, #d946ef, #c084fc)',
                     borderRadius: '9999px',
                     transition: 'width 1s ease-out 0.9s',
                   }}
                 />
               </div>
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
 
         {/* SECTION 9: REFLECTION */}
         <section>
-          <BubbleCard glowColor="purple">
+          <GlassCard>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#e879f9', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
                   <Heart style={{ width: 24, height: 24 }} />
                   Weekly Reflection
                 </h2>
-                <p style={{ fontSize: '0.875rem', color: '#999', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
+                <p style={{ fontSize: '0.875rem', color: '#e9d5ff', marginTop: '0.25rem', margin: '0.25rem 0 0 0' }}>
                   How do you feel about your progress?
                 </p>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 {[
-                  { mood: "amazing", emoji: "🤩", label: "Amazing!", color: "#00ff88" },
-                  { mood: "good", emoji: "😊", label: "Good", color: "#00f0ff" },
-                  { mood: "okay", emoji: "😐", label: "Okay", color: "#a855f7" },
-                  { mood: "struggling", emoji: "😔", label: "Struggling", color: "#ff0080" },
+                  { mood: "amazing", emoji: "🤩", label: "Amazing!", color: "#c084fc" },
+                  { mood: "good", emoji: "😊", label: "Good", color: "#a855f7" },
+                  { mood: "okay", emoji: "😐", label: "Okay", color: "#9333ea" },
+                  { mood: "struggling", emoji: "😔", label: "Struggling", color: "#d946ef" },
                 ].map(({ mood, emoji, label, color }) => {
                   const [isHovered, setIsHovered] = useState(false);
                   
@@ -1337,8 +1388,8 @@ export default function ProfileView() {
                         padding: '1rem',
                         borderRadius: '1.5rem',
                         border: '2px solid',
-                        borderColor: reflectionMood === mood ? '#ff0080' : (isHovered && reflectionMood !== mood ? 'rgba(255, 0, 128, 0.5)' : '#333'),
-                        background: reflectionMood === mood ? 'rgba(255, 0, 128, 0.2)' : 'rgba(42, 42, 62, 0.3)',
+                        borderColor: reflectionMood === mood ? '#e879f9' : (isHovered && reflectionMood !== mood ? 'rgba(232, 121, 249, 0.5)' : 'rgba(168, 85, 247, 0.3)'),
+                        background: reflectionMood === mood ? 'rgba(232, 121, 249, 0.2)' : 'rgba(139, 92, 246, 0.15)',
                         minWidth: '90px',
                         cursor: 'pointer',
                         transition: 'all 0.3s',
@@ -1346,7 +1397,7 @@ export default function ProfileView() {
                       }}
                     >
                       <div style={{ fontSize: '2.5rem' }}>{emoji}</div>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{label}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#e9d5ff' }}>{label}</span>
                     </button>
                   );
                 })}
@@ -1359,18 +1410,18 @@ export default function ProfileView() {
                     onChange={(e) => setReflectionText(e.target.value)}
                     placeholder="Tell us more about your experience... (optional)"
                     onFocus={(e) => {
-                      e.currentTarget.style.borderColor = '#a855f7';
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.6)';
                       e.currentTarget.style.boxShadow = '0 0 0 2px rgba(168, 85, 247, 0.2)';
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = '#333';
+                      e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)';
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                     style={{
                       width: '100%',
                       minHeight: '100px',
-                      background: 'rgba(42, 42, 62, 0.5)',
-                      border: '2px solid #333',
+                      background: 'rgba(139, 92, 246, 0.15)',
+                      border: '2px solid rgba(168, 85, 247, 0.3)',
                       borderRadius: '1.5rem',
                       padding: '1rem',
                       fontSize: '0.875rem',
@@ -1387,7 +1438,7 @@ export default function ProfileView() {
                     style={{
                       width: '100%',
                       padding: '1rem',
-                      background: 'linear-gradient(90deg, #a855f7, #00f0ff)',
+                      background: 'linear-gradient(90deg, #a855f7, #c084fc)',
                       color: '#fff',
                       fontWeight: 'bold',
                       fontSize: '1rem',
@@ -1406,14 +1457,14 @@ export default function ProfileView() {
               {reflectionMood && (
                 <div
                   style={{
-                    background: 'rgba(168, 85, 247, 0.1)',
+                    background: 'rgba(168, 85, 247, 0.15)',
                     padding: '1rem',
                     borderRadius: '1.5rem',
-                    border: '2px solid rgba(168, 85, 247, 0.3)',
+                    border: '2px solid rgba(168, 85, 247, 0.4)',
                   }}
                 >
-                  <p style={{ fontSize: '0.875rem', margin: 0 }}>
-                    <strong style={{ color: '#a855f7' }}>
+                  <p style={{ fontSize: '0.875rem', margin: 0, color: '#e9d5ff' }}>
+                    <strong style={{ color: '#c084fc' }}>
                       Based on your reflection:
                     </strong>{" "}
                     {reflectionMood === "amazing"
@@ -1427,20 +1478,22 @@ export default function ProfileView() {
                 </div>
               )}
             </div>
-          </BubbleCard>
+          </GlassCard>
         </section>
       </div>
 
       {/* Footer */}
       <footer style={{
-        borderTop: '2px solid #333',
-        background: 'rgba(26, 26, 46, 0.8)',
+        borderTop: '2px solid rgba(168, 85, 247, 0.3)',
+        background: 'rgba(88, 28, 135, 0.6)',
         backdropFilter: 'blur(10px)',
         marginTop: '3rem',
         borderRadius: '1.5rem 1.5rem 0 0',
+        position: 'relative',
+        zIndex: 10,
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.875rem', color: '#999', margin: 0 }}>
+          <p style={{ fontSize: '0.875rem', color: '#c084fc', margin: 0 }}>
             Keep growing, keep connecting. Your future self will thank you.
           </p>
         </div>

@@ -1,18 +1,32 @@
-// src/components/BottomNav.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
 import { Timeline, CalendarMonth, People, Checklist, SmartToy } from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
 
+// Define your routes for each tab
 const tabs = [
-  { label: "Progress", icon: <Timeline fontSize="large" /> },
-  { label: "Schedule", icon: <CalendarMonth fontSize="large" /> },
-  { label: "Community", icon: <People fontSize="large" /> },
-  { label: "Actions", icon: <Checklist fontSize="large" /> },
-  { label: "AI Agent", icon: <SmartToy fontSize="large" /> },
+  { label: "Progress", icon: <Timeline fontSize="large" />, path: "/profile" },
+  { label: "Schedule", icon: <CalendarMonth fontSize="large" />, path: "/schedule" },
+  { label: "Community", icon: <People fontSize="large" />, path: "/products" },
+  { label: "Actions", icon: <Checklist fontSize="large" />, path: "/blog" },
+  { label: "AI Agent", icon: <SmartToy fontSize="large" />, path: "/ai-agent" },
 ];
 
 export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState(0);
+
+  // Update activeTab based on current route
+  useEffect(() => {
+    const currentIndex = tabs.findIndex(tab => tab.path === location.pathname);
+    if (currentIndex !== -1) setActiveTab(currentIndex);
+  }, [location.pathname]);
+
+  const handleChange = (_, newValue: number) => {
+    setActiveTab(newValue);
+    navigate(tabs[newValue].path);
+  };
 
   return (
     <Paper
@@ -21,32 +35,55 @@ export default function BottomNav() {
         bottom: 0,
         left: 0,
         right: 0,
-        height: "70px",
-        borderRadius: 0, // full rectangular
-        backdropFilter: "blur(10px)",
-        backgroundColor: "rgba(255, 255, 255, 0.9)", // light glassy
-        boxShadow: "0 -2px 10px rgba(0,0,0,0.1)",
+        height: "80px",
+        borderRadius: 0,
+        backdropFilter: "blur(16px)",
+        background: "linear-gradient(to top, rgba(88, 28, 135, 0.95), rgba(109, 40, 217, 0.9))",
+        boxShadow: "0 -4px 24px rgba(168, 85, 247, 0.3)",
+        border: "none",
+        borderTop: "1px solid rgba(168, 85, 247, 0.2)",
         zIndex: 1300,
       }}
-      elevation={3}
+      elevation={0}
     >
       <BottomNavigation
         showLabels
         value={activeTab}
-        onChange={(_, newValue) => setActiveTab(newValue)}
+        onChange={handleChange}
         sx={{
           bgcolor: "transparent",
+          height: "100%",
           "& .Mui-selected": {
-            color: "#4f46e5", // active tab highlight
+            color: "#fbbf24 !important",
+            "& .MuiSvgIcon-root": {
+              transform: "scale(1.1)",
+              filter: "drop-shadow(0 0 8px rgba(251, 191, 36, 0.5))",
+            },
           },
           "& .MuiBottomNavigationAction-root": {
-            color: "#1f1f1f", // default dark text
+            color: "rgba(233, 213, 255, 0.7)",
             fontSize: 14,
             minWidth: "70px",
+            padding: "8px 12px",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              color: "rgba(233, 213, 255, 1)",
+              backgroundColor: "rgba(168, 85, 247, 0.15)",
+              borderRadius: "16px",
+            },
           },
           "& .MuiBottomNavigationAction-label": {
             fontWeight: 600,
-            fontSize: "0.85rem",
+            fontSize: "0.75rem",
+            marginTop: "4px",
+            transition: "all 0.3s ease",
+            "&.Mui-selected": {
+              fontSize: "0.8rem",
+              fontWeight: 700,
+            },
+          },
+          "& .MuiSvgIcon-root": {
+            transition: "all 0.3s ease",
           },
         }}
       >

@@ -1,23 +1,16 @@
 import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
-
 import { useEffect } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
-
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import { useTheme } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
-
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-
 import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
-
 import { NavUpgrade } from '../components/nav-upgrade';
 import { WorkspacesPopover } from '../components/workspaces-popover';
-
 import type { NavItem } from '../nav-config-dashboard';
 import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
 
@@ -32,6 +25,8 @@ export type NavContentProps = {
   workspaces: WorkspacesPopoverProps['data'];
   sx?: SxProps<Theme>;
 };
+
+// ----------------------------------------------------------------------
 
 export function NavDesktop({
   sx,
@@ -55,9 +50,9 @@ export function NavDesktop({
         flexDirection: 'column',
         zIndex: 'var(--layout-nav-zIndex)',
         width: 'var(--layout-nav-vertical-width)',
-        background: 'rgba(255, 255, 255, 0.85)', // translucent light white
-        backdropFilter: 'blur(10px)', // glass effect
-        color: '#1f1f1f', // dark text
+        background: 'rgba(85, 45, 160, 0.95)', // darker purple
+        backdropFilter: 'blur(10px)',
+        color: '#ffffff',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
         borderRight: '1px solid rgba(0,0,0,0.05)',
         [theme.breakpoints.up(layoutQuery)]: { display: 'flex' },
@@ -97,9 +92,9 @@ export function NavMobile({
           px: 2.5,
           overflow: 'unset',
           width: 'var(--layout-nav-mobile-width)',
-          background: 'rgba(255, 255, 255, 0.85)',
+          background: 'rgba(85, 45, 160, 0.95)', // darker purple
           backdropFilter: 'blur(10px)',
-          color: '#1f1f1f',
+          color: '#ffffff',
           ...sx,
         },
       }}
@@ -157,18 +152,18 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                         py: 1,
                         gap: 2,
                         pr: 1.5,
-                        borderRadius: 0.75,
+                        borderRadius: 1,
                         typography: 'body2',
                         fontWeight: 'fontWeightMedium',
-                        color: '#1f1f1f',
+                        color: '#ffffff',
                         minHeight: 44,
                         backgroundColor: isActived
-                          ? 'rgba(0,0,0,0.05)'
+                          ? 'rgba(255, 255, 255, 0.1)' // active item slightly lighter
                           : 'transparent',
                         '&:hover': {
                           backgroundColor: isActived
-                            ? 'rgba(0,0,0,0.08)'
-                            : 'rgba(0,0,0,0.03)',
+                            ? 'rgba(255, 255, 255, 0.2)'
+                            : 'rgba(255, 255, 255, 0.08)',
                         },
                       }),
                     ]}
@@ -192,7 +187,7 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
 
       {slots?.bottomArea}
 
-      <NavUpgrade />
+      <NavUpgrade sx={{ color: '#ffffff' }} />
     </>
   );
 }
