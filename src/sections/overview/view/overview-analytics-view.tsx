@@ -23,14 +23,19 @@ import TodayActionCard from 'src/components/01';
 import DuolingoProgressMap from 'src/components/02';
 import GoalGridChatbot from 'src/components/03';
 import FriendsCommunity from "src/components/04";
+import { signInWithGoogle, logOut } from "../../../firebase";
+
 
 // ----------------------------------------------------------------------
+
+
 
 const LEAGUES = {
   bronze: { title: "Bronze League", gradient: "linear-gradient(to right, #cd7f32, #d1a17c)", color: "#cd7f32" },
   silver: { title: "Silver League", gradient: "linear-gradient(to right, #c0c0c0, #d9d9d9)", color: "#c0c0c0" },
   gold: { title: "Gold League", gradient: "linear-gradient(to right, #ffd700, #ffec8b)", color: "#ffd700" },
 };
+
 
 const TransformationSlider = () => {
   const [currentStory, setCurrentStory] = useState(0);
@@ -411,6 +416,8 @@ const friends = [
   },
 ];
 
+
+
 export function OverviewAnalyticsView() {
   return (
     <DashboardContent maxWidth="xl">
@@ -418,6 +425,28 @@ export function OverviewAnalyticsView() {
       <div className="min-h-screen">
 
 	 <TransformationSlider />
+
+	<div>
+      <button
+        onClick={async () => {
+          const user = await signInWithGoogle();
+          if (user) {
+            console.log("User signed in:", user);
+          }
+        }}
+      >
+        Sign up with Google
+      </button>
+
+      <button
+        onClick={async () => {
+          await logOut();
+          console.log("User logged out");
+        }}
+      >
+        Logout
+      </button>
+    </div>
         
       {/* Welcome heading with gradient text, sparkles, and animation */}
 <div className="mb-8">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion  } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Users } from 'lucide-react';
 import {
   Trophy, Flame, Sparkles, RefreshCw, Check, ChevronLeft, ChevronRight,
@@ -9,136 +9,28 @@ import {
 } from "lucide-react";
 import Confetti from "react-confetti";
 
-const MOCK_DAY_TASKS = [
-  {
-    id: "day1",
-    date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Foundation: Understanding Yourself",
-    dayNumber: 1,
-    unlocked: true,
-    motivationalQuote: "Self-awareness is the first step to growth.",
-    summary: "Begin your journey by understanding your current social comfort zone and goals.",
-    xpPerTask: 15,
-    tasks: [
-      { task: "Write down 3 social situations that make you uncomfortable", done: true, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Identify your top 3 social strengths", done: true, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Set one clear social goal for this month", done: true, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Reflect on a positive social interaction from your past", done: true, difficulty: 'easy', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day2",
-    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Building Confidence: Small Wins",
-    dayNumber: 2,
-    unlocked: true,
-    motivationalQuote: "Confidence grows through small, consistent actions.",
-    summary: "Focus on micro-interactions that build your social momentum.",
-    xpPerTask: 15,
-    tasks: [
-      { task: "Make eye contact and smile at 3 strangers", done: true, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Ask a cashier or barista how their day is going", done: true, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Give someone a genuine compliment", done: true, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Practice open body language for 1 hour", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day3",
-    date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Active Listening Mastery",
-    dayNumber: 3,
-    unlocked: true,
-    motivationalQuote: "Listening is where connection begins.",
-    summary: "Master the art of truly hearing others.",
-    xpPerTask: 20,
-    tasks: [
-      { task: "In conversations, wait 2 seconds before responding", done: true, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Ask 3 follow-up questions in a conversation", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Paraphrase what someone said before adding your input", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Notice and acknowledge someone's emotions during a talk", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day4",
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Conversation Starters & Small Talk",
-    dayNumber: 4,
-    unlocked: true,
-    motivationalQuote: "Every meaningful relationship started with a simple 'hello'.",
-    summary: "Learn to initiate and maintain engaging conversations.",
-    xpPerTask: 20,
-    tasks: [
-      { task: "Start a conversation with someone new using a situational opener", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Practice 3 different conversation starters", done: false, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Keep a casual conversation going for 5+ minutes", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Share a personal story or anecdote in a conversation", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day5",
-    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Body Language & Non-Verbal Communication",
-    dayNumber: 5,
-    unlocked: true,
-    motivationalQuote: "Your body speaks louder than your words.",
-    summary: "Master the silent language of connection.",
-    xpPerTask: 20,
-    tasks: [
-      { task: "Practice confident posture for 30 minutes", done: false, difficulty: 'easy', timeSpent: 0, notes: '' },
-      { task: "Mirror someone's body language subtly in a conversation", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Maintain eye contact for 70% of a conversation", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Use hand gestures to emphasize your points", done: false, difficulty: 'easy', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day6",
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Handling Awkward Moments",
-    dayNumber: 6,
-    unlocked: true,
-    motivationalQuote: "Awkwardness is just growth in disguise.",
-    summary: "Learn to navigate uncomfortable social situations with grace.",
-    xpPerTask: 25,
-    tasks: [
-      { task: "When there's a silence, embrace it for 3 seconds before speaking", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Make a light joke about an awkward situation", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Acknowledge and move past a conversation fumble gracefully", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Practice self-compassion after a social misstep", done: false, difficulty: 'easy', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day7",
-    date: new Date().toISOString().split("T")[0],
-    title: "Building Deeper Connections",
-    dayNumber: 7,
-    unlocked: true,
-    motivationalQuote: "Real connections happen when we show our authentic selves.",
-    summary: "Move beyond surface-level interactions to meaningful relationships.",
-    xpPerTask: 25,
-    tasks: [
-      { task: "Ask someone a deeper question about their values or dreams", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Share something vulnerable or personal with someone you trust", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Follow up with someone you talked to earlier this week", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Express genuine appreciation to someone in your life", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-    ],
-  },
-  {
-    id: "day8",
-    date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    title: "Group Dynamics & Social Settings",
-    dayNumber: 8,
-    unlocked: false,
-    motivationalQuote: "Complete Day 7 to unlock!",
-    summary: "Navigate group conversations and social gatherings confidently.",
-    xpPerTask: 30,
-    tasks: [
-      { task: "Join a group conversation and contribute one idea", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Introduce two people to each other", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-      { task: "Facilitate a group discussion or activity", done: false, difficulty: 'hard', timeSpent: 0, notes: '' },
-      { task: "Include someone who seems left out in a conversation", done: false, difficulty: 'medium', timeSpent: 0, notes: '' },
-    ],
-  },
-];
+// Firebase imports - Make sure to install: npm install firebase
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDoc, updateDoc, collection, query, limit, getDocs } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+// ============ FIREBASE CONFIG ============
+// REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyBNCXIOAX2HUdeLvUxkTJh7DVbv8JU485s",
+  authDomain: "goalgrid-c5e9c.firebaseapp.com",
+  projectId: "goalgrid-c5e9c",
+  storageBucket: "goalgrid-c5e9c.firebasestorage.app",
+  messagingSenderId: "544004357501",
+  appId: "1:544004357501:web:4b81a3686422b28534e014",
+  measurementId: "G-BJQMLK9JJ1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ============ HELPER FUNCTIONS ============
 
 const getDifficultyColor = (difficulty) => {
   switch (difficulty) {
@@ -164,9 +56,20 @@ const formatTime = (seconds) => {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-export default function EnhancedTodayActionCard() {
-  const [dayTasks, setDayTasks] = useState(MOCK_DAY_TASKS);
-  const [currentDayIndex, setCurrentDayIndex] = useState(6);
+const determineDifficulty = (taskText) => {
+  const lowerTask = taskText.toLowerCase();
+  if (lowerTask.includes('review') || lowerTask.includes('reflect') || lowerTask.includes('schedule') || lowerTask.includes('take a few minutes')) {
+    return 'easy';
+  } else if (lowerTask.includes('practice') || lowerTask.includes('connect') || lowerTask.includes('reach out') || lowerTask.includes('write')) {
+    return 'medium';
+  } else {
+    return 'hard';
+  }
+};
+
+export default function TodayActionCard() {
+  const [dayTasks, setDayTasks] = useState([]);
+  const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [openRegenDialog, setOpenRegenDialog] = useState(false);
   const [regenInstructions, setRegenInstructions] = useState("");
@@ -175,6 +78,134 @@ export default function EnhancedTodayActionCard() {
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [expandedTaskNote, setExpandedTaskNote] = useState(null);
   const [taskNotes, setTaskNotes] = useState({});
+  
+  // Firestore specific state
+  const [loading, setLoading] = useState(true);
+  const [firestoreDocId, setFirestoreDocId] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [error, setError] = useState(null);
+
+  // ============ AUTH LISTENER ============
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+        setError("Please log in to view your tasks");
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // ============ FETCH FROM FIRESTORE ============
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchTasksFromFirestore = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Query to get the first document in datedcourses collection
+        const datedCoursesRef = collection(db, `users/${userId}/datedcourses`);
+        const q = query(datedCoursesRef, limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          setError("No courses found. Please create a course first.");
+          setLoading(false);
+          return;
+        }
+
+        // Get the first document
+        const docSnap = querySnapshot.docs[0];
+        const data = docSnap.data();
+        setFirestoreDocId(docSnap.id);
+
+        if (!data.lessons_by_date) {
+          setError("No lessons found in this course.");
+          setLoading(false);
+          return;
+        }
+
+        // Transform Firestore data to component format
+        const transformedTasks = transformFirestoreData(data.lessons_by_date);
+        setDayTasks(transformedTasks);
+
+        // Set current day index to today or the last available day
+        const today = new Date().toISOString().split("T")[0];
+        const todayIndex = transformedTasks.findIndex(day => day.date === today);
+        
+        if (todayIndex >= 0) {
+          setCurrentDayIndex(todayIndex);
+        } else {
+          // Find the last unlocked day
+          const lastUnlockedIndex = transformedTasks.reduce((lastIdx, day, idx) => 
+            day.unlocked ? idx : lastIdx, 0
+          );
+          setCurrentDayIndex(lastUnlockedIndex);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching tasks:", err);
+        setError(`Error loading tasks: ${err.message}`);
+        setLoading(false);
+      }
+    };
+
+    fetchTasksFromFirestore();
+  }, [userId]);
+
+  // ============ TRANSFORM FIRESTORE DATA ============
+  const transformFirestoreData = (lessonsByDate) => {
+    const sortedDates = Object.keys(lessonsByDate).sort();
+    
+    return sortedDates.map((date, index) => {
+      const lesson = lessonsByDate[date];
+      
+      // Check if previous day is completed to determine unlock status
+      const isUnlocked = index === 0 || (index > 0 && 
+        lessonsByDate[sortedDates[index - 1]].tasks.every(t => t.done)
+      );
+      
+      return {
+        id: `day${index + 1}`,
+        date: date,
+        title: lesson.title || "Daily Challenge",
+        dayNumber: index + 1,
+        unlocked: isUnlocked,
+        motivationalQuote: lesson.quote || lesson.motivation || "",
+        summary: lesson.summary || "",
+        xpPerTask: 20,
+        tasks: lesson.tasks.map(task => ({
+          task: task.task,
+          done: task.done || false,
+          difficulty: task.difficulty || determineDifficulty(task.task),
+          timeSpent: task.timeSpent || 0,
+          notes: task.notes || ''
+        }))
+      };
+    });
+  };
+
+  // ============ UPDATE FIRESTORE ============
+  const updateFirestore = async (updatedLessonsByDate) => {
+    if (!userId || !firestoreDocId) return;
+
+    try {
+      const docRef = doc(db, `users/${userId}/datedcourses`, firestoreDocId);
+      await updateDoc(docRef, {
+        lessons_by_date: updatedLessonsByDate
+      });
+    } catch (err) {
+      console.error("Error updating Firestore:", err);
+      throw err;
+    }
+  };
 
   // Timer effect with cleanup
   useEffect(() => {
@@ -196,7 +227,6 @@ export default function EnhancedTodayActionCard() {
     let totalTimeSpent = 0;
     let currentStreak = 0;
     let taskCount = 0;
-    let consecutiveDaysCompleted = true;
 
     const sortedDays = [...dayTasks].sort((a, b) => 
       new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -204,7 +234,7 @@ export default function EnhancedTodayActionCard() {
 
     const today = new Date().setHours(0, 0, 0, 0);
 
-    // Calculate streak properly - truly consecutive days
+    // Calculate streak properly
     for (let i = sortedDays.length - 1; i >= 0; i--) {
       const day = sortedDays[i];
       const dayDate = new Date(day.date).setHours(0, 0, 0, 0);
@@ -277,100 +307,156 @@ export default function EnhancedTodayActionCard() {
     setCurrentDayIndex(index);
   };
 
-  const handleTaskToggle = (dayDate, taskIndex) => {
+  const handleTaskToggle = async (dayDate, taskIndex) => {
+    if (!userId || !firestoreDocId) return;
+
     const currentDay = dayTasks.find((d) => d.date === dayDate);
     if (!currentDay) return;
 
     const task = currentDay.tasks[taskIndex];
     const wasCompleted = task.done;
     const currentCompletedCount = currentDay.tasks.filter((t) => t.done).length;
+    const newDoneStatus = !wasCompleted;
 
-    // Stop timer if this task's timer is active
-    if (activeTimer === taskIndex && !wasCompleted) {
-      // Save accumulated time when completing
-      setDayTasks((prev) =>
-        prev.map((day) => {
-          if (day.date !== dayDate) return day;
-          const newTasks = [...day.tasks];
-          newTasks[taskIndex] = { 
-            ...newTasks[taskIndex], 
-            done: true,
-            timeSpent: (newTasks[taskIndex].timeSpent || 0) + timerSeconds,
-          };
-          return { ...day, tasks: newTasks };
-        })
-      );
-      setActiveTimer(null);
-      setTimerSeconds(0);
-    } else {
-      // Regular toggle
-      setDayTasks((prev) =>
-        prev.map((day) => {
-          if (day.date !== dayDate) return day;
-          const newTasks = [...day.tasks];
-          newTasks[taskIndex] = { 
-            ...newTasks[taskIndex], 
-            done: !newTasks[taskIndex].done,
-          };
-          return { ...day, tasks: newTasks };
-        })
-      );
+    // Calculate time to save if timer is active
+    let timeToSave = task.timeSpent || 0;
+    if (activeTimer === taskIndex && newDoneStatus) {
+      timeToSave += timerSeconds;
     }
 
-    // Check if all tasks completed and trigger confetti
-    if (!wasCompleted && currentCompletedCount + 1 === currentDay.tasks.length) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 4000);
+    // Update local state first for immediate feedback
+    setDayTasks((prev) =>
+      prev.map((day) => {
+        if (day.date !== dayDate) return day;
+        const newTasks = [...day.tasks];
+        newTasks[taskIndex] = { 
+          ...newTasks[taskIndex], 
+          done: newDoneStatus,
+          timeSpent: newDoneStatus && activeTimer === taskIndex ? timeToSave : newTasks[taskIndex].timeSpent
+        };
+        return { ...day, tasks: newTasks };
+      })
+    );
+
+    // Stop timer if active
+    if (activeTimer === taskIndex) {
+      setActiveTimer(null);
+      setTimerSeconds(0);
+    }
+
+    // Update Firestore
+    try {
+      const docRef = doc(db, `users/${userId}/datedcourses`, firestoreDocId);
+      const docSnap = await getDoc(docRef);
       
-      // Unlock next day
-      const currentIdx = dayTasks.findIndex(d => d.date === dayDate);
-      const nextDayIndex = currentIdx + 1;
-      if (nextDayIndex < dayTasks.length) {
-        setDayTasks(prev => prev.map((day, idx) => 
-          idx === nextDayIndex ? { ...day, unlocked: true } : day
-        ));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const updatedLessons = { ...data.lessons_by_date };
+        
+        updatedLessons[dayDate].tasks[taskIndex].done = newDoneStatus;
+        if (newDoneStatus && activeTimer === taskIndex) {
+          updatedLessons[dayDate].tasks[taskIndex].timeSpent = timeToSave;
+        }
+
+        await updateFirestore(updatedLessons);
+
+        // Check if all tasks completed
+        if (newDoneStatus && currentCompletedCount + 1 === currentDay.tasks.length) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 4000);
+          
+          // Unlock next day
+          const currentIdx = dayTasks.findIndex(d => d.date === dayDate);
+          const nextDayIndex = currentIdx + 1;
+          if (nextDayIndex < dayTasks.length) {
+            setDayTasks(prev => prev.map((day, idx) => 
+              idx === nextDayIndex ? { ...day, unlocked: true } : day
+            ));
+          }
+        }
       }
+    } catch (err) {
+      console.error("Error updating task:", err);
+      // Revert on error
+      setDayTasks((prev) =>
+        prev.map((day) => {
+          if (day.date !== dayDate) return day;
+          const newTasks = [...day.tasks];
+          newTasks[taskIndex] = { 
+            ...newTasks[taskIndex], 
+            done: wasCompleted,
+          };
+          return { ...day, tasks: newTasks };
+        })
+      );
     }
   };
 
-  const handleStartTimer = (taskIndex) => {
+  const handleStartTimer = async (taskIndex) => {
     if (activeTimer === taskIndex) {
       // Pause timer and save time
+      const timeToSave = timerSeconds;
+      
       setDayTasks((prev) =>
         prev.map((day, idx) => {
           if (idx !== currentDayIndex) return day;
           const newTasks = [...day.tasks];
           newTasks[taskIndex] = {
             ...newTasks[taskIndex],
-            timeSpent: (newTasks[taskIndex].timeSpent || 0) + timerSeconds,
+            timeSpent: (newTasks[taskIndex].timeSpent || 0) + timeToSave,
           };
           return { ...day, tasks: newTasks };
         })
       );
+
+      // Update Firestore
+      try {
+        const docRef = doc(db, `users/${userId}/datedcourses`, firestoreDocId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const updatedLessons = { ...data.lessons_by_date };
+          const currentDay = dayTasks[currentDayIndex];
+          
+          updatedLessons[currentDay.date].tasks[taskIndex].timeSpent = 
+            (updatedLessons[currentDay.date].tasks[taskIndex].timeSpent || 0) + timeToSave;
+
+          await updateFirestore(updatedLessons);
+        }
+      } catch (err) {
+        console.error("Error saving timer:", err);
+      }
+
       setActiveTimer(null);
       setTimerSeconds(0);
     } else {
       // Stop any other timer first
       if (activeTimer !== null) {
+        const prevTimeToSave = timerSeconds;
+        
         setDayTasks((prev) =>
           prev.map((day, idx) => {
             if (idx !== currentDayIndex) return day;
             const newTasks = [...day.tasks];
             newTasks[activeTimer] = {
               ...newTasks[activeTimer],
-              timeSpent: (newTasks[activeTimer].timeSpent || 0) + timerSeconds,
+              timeSpent: (newTasks[activeTimer].timeSpent || 0) + prevTimeToSave,
             };
             return { ...day, tasks: newTasks };
           })
         );
       }
+      
       // Start new timer
       setActiveTimer(taskIndex);
       setTimerSeconds(dayTasks[currentDayIndex].tasks[taskIndex].timeSpent || 0);
     }
   };
 
-  const handleResetDay = () => {
+  const handleResetDay = async () => {
+    if (!userId || !firestoreDocId) return;
+    
     const currentDay = dayTasks[currentDayIndex];
     if (!confirm(`Reset all tasks for "${currentDay.title}"?`)) return;
 
@@ -383,49 +469,46 @@ export default function EnhancedTodayActionCard() {
         };
       })
     );
+    
     setActiveTimer(null);
     setTimerSeconds(0);
     setTaskNotes({});
+
+    // Update Firestore
+    try {
+      const docRef = doc(db, `users/${userId}/datedcourses`, firestoreDocId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const updatedLessons = { ...data.lessons_by_date };
+        
+        updatedLessons[currentDay.date].tasks = updatedLessons[currentDay.date].tasks.map(t => ({
+          ...t,
+          done: false,
+          timeSpent: 0,
+          notes: ''
+        }));
+
+        await updateFirestore(updatedLessons);
+      }
+    } catch (err) {
+      console.error("Error resetting day:", err);
+    }
   };
 
   const handleRegenerateTasks = () => {
-    const variations = [
-      "Practice greeting 5 new people today",
-      "Share an interesting fact in a conversation",
-      "Ask open-ended questions in 3 conversations",
-      "Notice and compliment someone's effort",
-      "Introduce yourself to a stranger",
-      "Practice active listening for 10 minutes",
-      "Maintain positive body language throughout the day",
-      "Start a conversation about a shared interest",
-    ];
-
-    const difficulties = ['easy', 'medium', 'hard'];
-    const newTasks = Array(4).fill(null).map(() => {
-      const randomTask = variations[Math.floor(Math.random() * variations.length)];
-      const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
-      return {
-        task: randomTask,
-        done: false,
-        difficulty: randomDifficulty,
-        timeSpent: 0,
-        notes: '',
-      };
-    });
-
-    setDayTasks((prev) =>
-      prev.map((day, idx) => {
-        if (idx !== currentDayIndex) return day;
-        return { ...day, tasks: newTasks };
-      })
-    );
-
+    alert("AI Regeneration coming soon! This will use AI to create personalized tasks based on your instructions.");
     setOpenRegenDialog(false);
     setRegenInstructions("");
   };
 
-  const handleAddNote = (taskIndex) => {
+  const handleAddNote = async (taskIndex) => {
+    if (!userId || !firestoreDocId) return;
+
     const note = taskNotes[taskIndex] || '';
+    const currentDay = dayTasks[currentDayIndex];
+
     setDayTasks((prev) =>
       prev.map((day, idx) => {
         if (idx !== currentDayIndex) return day;
@@ -434,14 +517,68 @@ export default function EnhancedTodayActionCard() {
         return { ...day, tasks: newTasks };
       })
     );
+
+    // Update Firestore
+    try {
+      const docRef = doc(db, `users/${userId}/datedcourses`, firestoreDocId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        const updatedLessons = { ...data.lessons_by_date };
+        updatedLessons[currentDay.date].tasks[taskIndex].notes = note;
+
+        await updateFirestore(updatedLessons);
+      }
+    } catch (err) {
+      console.error("Error updating note:", err);
+    }
+
     setExpandedTaskNote(null);
-    // Clear only this task's note
     setTaskNotes(prev => {
       const newNotes = {...prev};
       delete newNotes[taskIndex];
       return newNotes;
     });
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-xl">Loading your tasks...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
+        <div className="bg-red-900/30 border-2 border-red-500/50 rounded-2xl p-8 max-w-md text-center">
+          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Error</h2>
+          <p className="text-red-200">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // No tasks state
+  if (dayTasks.length === 0) {
+    return (
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-4">
+        <div className="bg-purple-900/30 border-2 border-purple-500/50 rounded-2xl p-8 max-w-md text-center">
+          <Lightbulb className="w-16 h-16 text-purple-400 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">No Tasks Found</h2>
+          <p className="text-purple-200">Create your first course to get started!</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentDay = dayTasks[currentDayIndex];
   const completedTasks = currentDay.tasks.filter((t) => t.done).length;
@@ -463,59 +600,56 @@ export default function EnhancedTodayActionCard() {
 
   return (
     <div className="min-h-screen bg-transparent p-4 sm:p-6 lg:p-8">
-  <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {showConfetti && <Confetti recycle={false} numberOfPieces={500} />}
 
-
-	  {/* Stunning Header */}
-<motion.div 
-  initial={{ opacity: 0, y: -50 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.8, ease: "easeOut" }}
-  className="text-center mb-12"
->
-  <motion.div 
-    initial={{ scale: 0 }}
-    animate={{ scale: 1 }}
-    transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-    className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-purple-600/40 to-pink-600/40 backdrop-blur-md rounded-full border-2 border-purple-400/50 shadow-2xl shadow-purple-500/30"
-  >
-    <Sparkles className="w-4 md:w-5 h-4 md:h-5 text-yellow-300 animate-pulse" />
-    <span className="text-sm md:text-lg font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-      Your Learning Squad
-    </span>
-    <Sparkles className="w-4 md:w-5 h-4 md:h-5 text-pink-300 animate-pulse" />
-  </motion.div>
-  
-  <motion.h1 
-    initial={{ opacity: 0, scale: 0.8 }}
-    animate={{ opacity: 1, scale: 1 }}
-    transition={{ delay: 0.5, duration: 0.8 }}
-    className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3"
-  >
-    <Users className="w-8 h-8 md:w-10 md:h-10 text-purple-400" />
-    <span className="bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 bg-clip-text text-transparent">
-      Your Today's Tasks
-    </span>
-  </motion.h1>
-  
-  <motion.p 
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ delay: 0.7 }}
-    className="text-base md:text-lg text-purple-300 max-w-2xl mx-auto mb-6 md:mb-8 px-4"
-  >
-    Check off your daily tasks and keep making progress !
-  </motion.p>
-</motion.div>
-
+        {/* Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-center mb-12"
+        >
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+            className="inline-flex items-center gap-2 md:gap-3 mb-4 md:mb-6 px-4 md:px-6 py-2 md:py-3 bg-gradient-to-r from-purple-600/40 to-pink-600/40 backdrop-blur-md rounded-full border-2 border-purple-400/50 shadow-2xl shadow-purple-500/30"
+          >
+            <Sparkles className="w-4 md:w-5 h-4 md:h-5 text-yellow-300 animate-pulse" />
+            <span className="text-sm md:text-lg font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+              Your Learning Squad
+            </span>
+            <Sparkles className="w-4 md:w-5 h-4 md:h-5 text-pink-300 animate-pulse" />
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 leading-tight flex flex-col sm:flex-row items-center justify-center gap-2 md:gap-3"
+          >
+            <Users className="w-8 h-8 md:w-10 md:h-10 text-purple-400" />
+            <span className="bg-gradient-to-r from-purple-200 via-pink-200 to-purple-300 bg-clip-text text-transparent">
+              Your Today's Tasks
+            </span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="text-base md:text-lg text-purple-300 max-w-2xl mx-auto mb-6 md:mb-8 px-4"
+          >
+            Check off your daily tasks and keep making progress!
+          </motion.p>
+        </motion.div>
 
         <div className="bg-gradient-to-br from-purple-900/40 to-indigo-900/40 backdrop-blur-sm rounded-2xl border border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-purple-500/20">
           
-          {/* Header - Mobile Optimized */}
+          {/* Header Section */}
           <div className="bg-gradient-to-br from-purple-800/60 to-pink-900/60 backdrop-blur-sm p-4 sm:p-6 border-b border-purple-500/30">
             <div className="flex flex-col lg:flex-row justify-between gap-4">
-              {/* Left side - Title and Info */}
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-2">
                   <div className="flex items-center gap-2">
@@ -557,7 +691,6 @@ export default function EnhancedTodayActionCard() {
                 )}
               </div>
 
-              {/* Right side - XP and Stats */}
               <div className="flex sm:flex-col items-center sm:items-end gap-2 justify-between sm:justify-start">
                 <div className="flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-lg shadow-yellow-500/30">
                   <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -605,7 +738,7 @@ export default function EnhancedTodayActionCard() {
               </div>
             )}
 
-            {/* Day Navigation - Mobile Optimized */}
+            {/* Day Navigation */}
             <div className="flex items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-4">
               <button
                 onClick={() => handleDayChange(currentDayIndex - 1)}
@@ -668,7 +801,7 @@ export default function EnhancedTodayActionCard() {
               </div>
             )}
 
-            {/* Tasks - Mobile Optimized */}
+            {/* Tasks */}
             {canAccessDay && (
               <div className="space-y-3 mb-6">
                 {currentDay.tasks.map((taskObj, index) => {
