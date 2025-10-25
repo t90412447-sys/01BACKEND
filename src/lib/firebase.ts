@@ -6,13 +6,10 @@ import { getFirestore, Firestore } from "firebase/firestore";
 // Firebase config using environment variables
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBNCXIOAX2HUdeLvUxkTJh7DVbv8JU485s",
-  authDomain: import.meta.env.VITE_FIREBASE_PROJECT_ID
-    ? `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`
-    : "goalgrid-c5e9c.firebaseapp.com",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "goalgrid-c5e9c.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "goalgrid-c5e9c",
-  storageBucket: import.meta.env.VITE_FIREBASE_PROJECT_ID
-    ? `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`
-    : "goalgrid-c5e9c.firebasestorage.app",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "goalgrid-c5e9c.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "544004357501",
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:544004357501:web:4b81a3686422b28534e014",
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-BJQMLK9JJ1",
 };
@@ -20,13 +17,9 @@ const firebaseConfig = {
 // Initialize Firebase
 let app: FirebaseApp;
 try {
-  app = initializeApp(firebaseConfig);
+  app = getApp();
 } catch (error: any) {
-  if (error.code === "app/duplicate-app") {
-    app = getApp();
-  } else {
-    throw error;
-  }
+  app = initializeApp(firebaseConfig);
 }
 
 // Auth and Firestore instances
@@ -56,4 +49,3 @@ export const logOut = async () => {
     throw error;
   }
 };
-

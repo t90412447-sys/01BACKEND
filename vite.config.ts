@@ -11,18 +11,15 @@ const PORT = 3039;
 export default defineConfig({
   plugins: [
     react(),
-    tsconfigPaths(), // automatically picks up paths from tsconfig.json
+    tsconfigPaths(),
     checker({
       typescript: true,
       eslint: {
         useFlatConfig: true,
         lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
-        dev: { logLevel: ['error'] },
+        dev: { logLevel: ['warn'] }, // changed from 'error' to 'warn'
       },
-      overlay: {
-        position: 'tl',
-        initialIsOpen: false,
-      },
+      overlay: true, // still show overlay for dev errors
     }),
   ],
   resolve: {
@@ -33,10 +30,24 @@ export default defineConfig({
       },
       {
         find: '@',
-        replacement: path.resolve(__dirname, 'src'), // Needed for shadcn '@/' imports
+        replacement: path.resolve(__dirname, 'src'),
       },
     ],
   },
-  server: { port: PORT, host: true },
-  preview: { port: PORT, host: true },
+  server: {
+    port: PORT,
+    host: true,
+    strictPort: false,
+    allowedHosts: [
+      '2eb2c21a3889.ngrok-free.app',
+    ],
+  },
+  preview: {
+    port: PORT,
+    host: true,
+    strictPort: false,
+    allowedHosts: [
+      '2eb2c21a3889.ngrok-free.app',
+    ],
+  },
 });

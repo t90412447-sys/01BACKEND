@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { CheckCircle, Circle, Lock, BookOpen, Zap, Star, Sparkles, X, ChevronRight } from "lucide-react";
 import { db } from "../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import {  auth } from "../firebase"; 
 
 interface DayPlan {
   id: number;
@@ -15,7 +18,7 @@ interface DayPlan {
 }
 
 export default function DuolingoProgressMap() {
-  const HARDCODED_UID = "8UuQdWgmDahs2iv9EuDKcBkvfl62";
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -40,60 +43,106 @@ export default function DuolingoProgressMap() {
   };
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const datedCoursesRef = collection(db, `users/${HARDCODED_UID}/datedcourses`);
-        const snapshot = await getDocs(datedCoursesRef);
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setCurrentUser(user.uid);
+    } else {
+      setCurrentUser(null);
+      setLoading(false);
+    }
+  });
 
-        if (snapshot.empty) {
-          setLoading(false);
-          return;
+  return () => unsubscribe();
+}, []);
+
+useEffect(() => {
+  if (!currentUser) return;
+
+  const fetchTasks = async () => {
+    try {
+      const datedCoursesRef = collection(db, `users/${currentUser}/datedcourses`);
+      const snapshot = await getDocs(datedCoursesRef);
+
+      if (snapshot.empty) {
+        setLoading(false);
+        return;
+      }
+
+      // Get first course document
+      const firstDoc = snapshot.docs[0];
+      const courseData = firstDoc.data();
+
+      console.log("📚 Course data:", courseData);
+
+      // ============ READ FROM task_overview.days ============
+      if (!courseData.task_overview || !courseData.task_overview.days) {
+        console.log("No task_overview found");
+        setLoading(false);
+        return;
+      }
+
+      const days = courseData.task_overview.days;
+      console.log("✅ Found", days.length, "days");
+
+      // Calculate today's date for status determination
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Transform task_overview.days to DayPlan format
+      const plans: DayPlan[] = days.map((day, index) => {
+        const dayDate = new Date(day.date);
+        dayDate.setHours(0, 0, 0, 0);
+
+        // Extract task descriptions
+        const tasksArray = day.tasks.map((t: any) => t.description || "");
+        
+        // Count completed tasks
+        const completedTasksCount = day.tasks.filter((t: any) => t.done === true).length;
+        const totalTasksCount = day.tasks.length;
+        const isFullyCompleted = completedTasksCount === totalTasksCount;
+
+        // Determine status based on date and completion
+        let status: DayPlan["status"];
+        
+        if (isFullyCompleted) {
+          status = "completed";
+        } else if (dayDate.getTime() === today.getTime()) {
+          status = "current";
+        } else if (dayDate < today) {
+          status = "unlocked"; // Past dates that aren't complete
+        } else if (index === 0) {
+          status = "unlocked"; // First day is always unlocked
+        } else {
+          // Check if previous day is complete
+          const prevDay = days[index - 1];
+          const prevDayComplete = prevDay.tasks.every((t: any) => t.done === true);
+          status = prevDayComplete ? "unlocked" : "locked";
         }
 
-        const allDocs = snapshot.docs.map((d) => ({ id: d.id, data: d.data() }));
-        const randomDoc = allDocs[Math.floor(Math.random() * allDocs.length)];
-        const lessonsByDate = randomDoc.data.lessons_by_date || {};
+        return {
+          id: day.day,
+          date: day.date,
+          title: day.title,
+          status,
+          tasks: tasksArray,
+          completedTasks: completedTasksCount,
+          totalTasks: totalTasksCount,
+          xpReward: 150 + (day.day - 1) * 25,
+        };
+      });
 
-        const plans: DayPlan[] = Object.entries(lessonsByDate)
-          .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
-          .map(([date, dayData], index) => {
-            const tasksArray = (dayData.tasks || []).map((t: any) => t.task || "");
-            const status: DayPlan["status"] =
-              index < 2
-                ? "completed"
-                : index === 2
-                ? "current"
-                : index === 3
-                ? "unlocked"
-                : "locked";
+      console.log("📊 Transformed plans:", plans);
+      setDayPlans(plans);
+      
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            return {
-              id: index + 1,
-              date,
-              title: dayData.title || `Day ${index + 1}: Social Skills`,
-              status,
-              tasks: tasksArray,
-              completedTasks:
-                status === "completed"
-                  ? tasksArray.length
-                  : status === "current"
-                  ? 1
-                  : 0,
-              totalTasks: tasksArray.length,
-              xpReward: 150 + index * 25,
-            };
-          });
-
-        setDayPlans(plans);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTasks();
-  }, []);
+  fetchTasks();
+}, [currentUser]);
 
   if (loading) {
     return (

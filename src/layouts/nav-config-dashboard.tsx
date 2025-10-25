@@ -1,9 +1,7 @@
 import { Label } from 'src/components/label';
-import { SvgColor } from 'src/components/svg-color';
+import { Timeline, CalendarMonth, People, Checklist, SmartToy, AccountCircle, Lock, DisabledByDefault } from "@mui/icons-material";
 
 // ----------------------------------------------------------------------
-
-const icon = (name: string) => <SvgColor src={`/assets/icons/navbar/${name}.svg`} />;
 
 export type NavItem = {
   title: string;
@@ -16,17 +14,17 @@ export const navData = [
   {
     title: 'Dashboard',
     path: '/',
-    icon: icon('ic-analytics'),
+    icon: <SmartToy fontSize="medium" />,
   },
   {
-    title: 'User',
+    title: 'Your Lessons',
     path: '/user',
-    icon: icon('ic-user'),
+    icon: <Timeline fontSize="medium" />,
   },
   {
-    title: 'Products',
+    title: 'Community',
     path: '/products',
-    icon: icon('ic-cart'),
+    icon: <People fontSize="medium" />,
     info: (
       <Label color="error" variant="inverted">
         +3
@@ -34,23 +32,23 @@ export const navData = [
     ),
   },
   {
-    title: 'Blog',
+    title: 'Action Tracker',
     path: '/blog',
-    icon: icon('ic-blog'),
+    icon: <Checklist fontSize="medium" />,
   },
   {
-    title: 'Profile',               // <- added
+    title: 'Your Profile',
     path: '/profile',
-    icon: icon('ic-account'),       // make sure you have ic-account.svg in /assets/icons/navbar
+    icon: <AccountCircle fontSize="medium" />,
   },
   {
     title: 'Sign in',
     path: '/sign-in',
-    icon: icon('ic-lock'),
+    icon: <Lock fontSize="medium" />,
   },
   {
     title: 'Not found',
     path: '/404',
-    icon: icon('ic-disabled'),
+    icon: <DisabledByDefault fontSize="medium" />,
   },
 ];

@@ -1,32 +1,15 @@
-import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
-import { useTheme } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import { usePathname } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
-import { Logo } from 'src/components/logo';
 import { Scrollbar } from 'src/components/scrollbar';
-import { NavUpgrade } from '../components/nav-upgrade';
 import { WorkspacesPopover } from '../components/workspaces-popover';
-import type { NavItem } from '../nav-config-dashboard';
-import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
+import { Timeline, CalendarMonth, People, Checklist, SmartToy } from '@mui/icons-material';
 
-// ----------------------------------------------------------------------
-
-export type NavContentProps = {
-  data: NavItem[];
-  slots?: {
-    topArea?: React.ReactNode;
-    bottomArea?: React.ReactNode;
-  };
-  workspaces: WorkspacesPopoverProps['data'];
-  sx?: SxProps<Theme>;
-};
-
-// ----------------------------------------------------------------------
 
 export function NavDesktop({
   sx,
@@ -50,7 +33,7 @@ export function NavDesktop({
         flexDirection: 'column',
         zIndex: 'var(--layout-nav-zIndex)',
         width: 'var(--layout-nav-vertical-width)',
-        background: 'rgba(85, 45, 160, 0.95)', // darker purple
+        background: 'rgba(60, 20, 120, 0.95)', // darker purple
         backdropFilter: 'blur(10px)',
         color: '#ffffff',
         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
@@ -63,8 +46,6 @@ export function NavDesktop({
     </Box>
   );
 }
-
-// ----------------------------------------------------------------------
 
 export function NavMobile({
   sx,
@@ -92,7 +73,7 @@ export function NavMobile({
           px: 2.5,
           overflow: 'unset',
           width: 'var(--layout-nav-mobile-width)',
-          background: 'rgba(85, 45, 160, 0.95)', // darker purple
+          background: 'rgba(60, 20, 120, 0.95)', // darker purple
           backdropFilter: 'blur(10px)',
           color: '#ffffff',
           ...sx,
@@ -104,18 +85,19 @@ export function NavMobile({
   );
 }
 
-// ----------------------------------------------------------------------
-
 export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
   const pathname = usePathname();
 
   return (
     <>
-      <Logo />
+      {/* Title */}
+      <Box sx={{ mb: 4, px: 2 }}>
+        <Box sx={{ typography: 'h3', fontWeight: 'bold', color: '#fff' }}>
+          GOALGRID
+        </Box>
+      </Box>
 
       {slots?.topArea}
-
-      <WorkspacesPopover data={workspaces} sx={{ my: 2 }} />
 
       <Scrollbar fillContent>
         <Box
@@ -158,7 +140,7 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
                         color: '#ffffff',
                         minHeight: 44,
                         backgroundColor: isActived
-                          ? 'rgba(255, 255, 255, 0.1)' // active item slightly lighter
+                          ? 'rgba(255, 255, 255, 0.1)'
                           : 'transparent',
                         '&:hover': {
                           backgroundColor: isActived
@@ -186,8 +168,6 @@ export function NavContent({ data, slots, workspaces, sx }: NavContentProps) {
       </Scrollbar>
 
       {slots?.bottomArea}
-
-      <NavUpgrade sx={{ color: '#ffffff' }} />
     </>
   );
 }
