@@ -36,3 +36,6 @@ build
 tsconfig.tsbuildinfo
 .ncurc.js
 knip.jsonc
+"src/sections/creategoal/apikeys.json" 
+"src/components/whtsurgoal/apikeys.json" 
+"**/apikeys.json" 
