@@ -17,6 +17,35 @@ interface DayPlan {
   xpReward: number;
 }
 
+// Define the structure of a single Task object (from 01.tsx)
+interface Task {
+  task: string;
+  done: boolean;
+  difficulty: 'easy' | 'medium' | 'hard' | 'default';
+  timeSpent: number;
+  notes: string;
+  // Add any other properties your Task objects have
+}
+
+// Define the structure of a single Lesson/Day object (from 01.tsx)
+interface Lesson {
+  id: string;
+  date: string;
+  title: string;
+  dayNumber: number;
+  unlocked: boolean;
+  motivationalQuote: string;
+  summary: string;
+  xpPerTask: number;
+  tasks: Task[];
+}
+
+// Define the component's props
+export interface TaskOverviewProps {
+  dayData: Lesson | null; // Assuming dayData is a Lesson object or null if loading/not found
+  // Add other props if the component takes any (e.g., loading status, handlers)
+}
+
 export default function DuolingoProgressMap() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [dayPlans, setDayPlans] = useState<DayPlan[]>([]);

@@ -2,6 +2,21 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Users, Flame, Trophy, ChevronRight, Sparkles, Star, Zap, MessageCircle, Crown } from "lucide-react";
 
+interface Friend {
+  id: string;
+  name: string;
+  avatar: string;
+  league: string;
+  streak: number;
+  points: number;
+  isOnline: boolean;
+  friendshipLevel: number;
+}
+
+export interface CommunityTeaserProps {
+  friends: Friend[];
+}
+
 const mockFriends = [
   {
     id: "1",
@@ -46,7 +61,7 @@ const mockFriends = [
 ];
 
 const CommunityTeaser = () => {
-  const [hoveredId, setHoveredId] = useState(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   return (
     <div className="w-full min-h-screen bg-transparent p-4 md:p-8 lg:p-12 relative overflow-hidden">

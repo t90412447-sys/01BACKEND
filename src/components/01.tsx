@@ -30,11 +30,53 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// ============ INTERFACES ============
+
+// A type for the fixed set of difficulty levels
+type Difficulty = 'easy' | 'medium' | 'hard' | 'default';
+
+// Interface for a single Task object
+interface Task {
+  task: string;
+  done: boolean;
+  difficulty: Difficulty;
+  timeSpent: number;
+  notes: string;
+  // Add other properties if they exist in your data (like 'description' from task_overview)
+}
+
+// Interface for a single Lesson/Day object
+interface Lesson {
+  id: string;
+  date: string;
+  title: string;
+  dayNumber: number;
+  unlocked: boolean;
+  motivationalQuote: string;
+  summary: string;
+  xpPerTask: number;
+  tasks: Task[];
+}
+
+// Interface for the lessons_by_date structure from Firestore
+interface FirestoreLesson {
+  title?: string;
+  quote?: string;
+  motivation?: string;
+  summary?: string;
+  tasks: Record<string, any> | Task[] | undefined; // Flexible for the old format
+}
+
+// Interface for the overall lessons_by_date data structure
+interface LessonsByDate {
+  [date: string]: FirestoreLesson;
+}
+
 // ============ HELPER FUNCTIONS ============
 
 
 
-const getDifficultyColor = (difficulty) => {
+const getDifficultyColor = (difficulty: Difficulty) => {
   switch (difficulty) {
     case 'easy': return 'from-green-500 to-emerald-500';
     case 'medium': return 'from-yellow-500 to-orange-500';
@@ -43,7 +85,7 @@ const getDifficultyColor = (difficulty) => {
   }
 };
 
-const getDifficultyXPMultiplier = (difficulty) => {
+const getDifficultyXPMultiplier = (difficulty: Difficulty) => {
   switch (difficulty) {
     case 'easy': return 1;
     case 'medium': return 1.5;
@@ -52,13 +94,13 @@ const getDifficultyXPMultiplier = (difficulty) => {
   }
 };
 
-const formatTime = (seconds) => {
+const formatTime = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
-const determineDifficulty = (taskText) => {
+const determineDifficulty = (taskText: string): Difficulty => {
   const lowerTask = taskText.toLowerCase();
   if (lowerTask.includes('review') || lowerTask.includes('reflect') || lowerTask.includes('schedule') || lowerTask.includes('take a few minutes')) {
     return 'easy';
@@ -124,7 +166,6 @@ const OnboardingScreen = ({ onDismiss }) => {
 };
 
 export default function TodayActionCard() {
-  const [dayTasks, setDayTasks] = useState([]);
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const [openRegenDialog, setOpenRegenDialog] = useState(false);
@@ -139,6 +180,7 @@ export default function TodayActionCard() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [dayTasks, setDayTasks] = useState<Lesson[]>([]);
 
   const [hoveredTask, setHoveredTask] = useState(null);
   
@@ -250,14 +292,14 @@ useEffect(() => {
 }, [userId]);
 
 // ============ TRANSFORM task_overview.days FORMAT ============
-const transformTaskOverview = (days) => {
-  return days.map((day, index) => {
+const transformTaskOverview = (days: any[]): Lesson[] => {
+  return days.map((day: any, index: number): Lesson => {
     // Check if previous day is complete for unlocking
     const prevDayComplete = index === 0 || (
       days[index - 1].tasks.every(t => t.done === true)
     );
     
-    const tasksArray = day.tasks.map((task, taskIdx) => ({
+    const tasksArray = day.tasks.map((task: any, taskIdx: number): Task => ({
       task: task.description,
       done: task.done || false,
       difficulty: determineDifficultyFromDay(day.day),
@@ -281,20 +323,20 @@ const transformTaskOverview = (days) => {
 
 
 // ============ NEW: Helper function for difficulty ============
-const determineDifficultyFromDay = (dayNumber) => {
+const determineDifficultyFromDay = (dayNumber: number): Difficulty => {
   if (dayNumber === 1) return 'easy';
   if (dayNumber === 2 || dayNumber === 3) return 'medium';
   return 'hard';
 };
 
 // ============ TRANSFORM FIRESTORE DATA ============
-const transformFirestoreData = (lessonsByDate) => {
+const transformFirestoreData = (lessonsByDate: LessonsByDate): Lesson[] => {
   const sortedDates = Object.keys(lessonsByDate).sort();
   
-  return sortedDates.map((date, index) => {
+  return sortedDates.map((date: string, index: number): Lesson => {
     const lesson = lessonsByDate[date];
     
-    const getTasksArray = (tasks) => {
+    const getTasksArray = (tasks: any[]): Task[] => {
       if (!tasks) return [];
       if (Array.isArray(tasks)) {
         return tasks;
@@ -338,7 +380,7 @@ const transformFirestoreData = (lessonsByDate) => {
 
   // ============ UPDATE FIRESTORE ============
   // ============ UPDATE FIRESTORE ============
-const updateFirestore = async (updatedDayTasks) => {
+const updateFirestore = async (updatedDayTasks: Lesson[]) => {
   if (!userId || !firestoreDocId) return;
 
   try {
@@ -488,12 +530,12 @@ const updateFirestore = async (updatedDayTasks) => {
 
 
 
-const handleTaskClick = (taskObj, taskIndex) => {
+const handleTaskClick = (taskObj: Task, taskIndex: number) => {
   setSelectedTask({ task: taskObj, index: taskIndex });
   setShowTaskModal(true);
 };
 
-const handleGetLiveSupport = async (taskObj, taskIndex) => {
+const handleGetLiveSupport = async (taskObj: Task, taskIndex: number) => {
   try {
     setLoadingLiveSupport(true);
     
@@ -538,7 +580,7 @@ const handleGetLiveSupport = async (taskObj, taskIndex) => {
 };
 
 
-  const handleDayChange = (index) => {
+  const handleDayChange = (index: number) => {
     if (index < 0 || index >= dayTasks.length) return;
     const targetDay = dayTasks[index];
     if (!targetDay.unlocked) return;
@@ -564,7 +606,7 @@ const handleGetLiveSupport = async (taskObj, taskIndex) => {
     setCurrentDayIndex(index);
   };
 
-  const handleTaskToggle = async (dayDate, taskIndex) => {
+  const handleTaskToggle = async (dayDate: string, taskIndex: number) => {
   if (!userId || !firestoreDocId) return;
 
   const currentDay = dayTasks.find((d) => d.date === dayDate);
@@ -625,7 +667,7 @@ const handleGetLiveSupport = async (taskObj, taskIndex) => {
   }
 };
 
-  const handleStartTimer = async (taskIndex) => {
+  const handleStartTimer = async (taskIndex: number) => {
   if (activeTimer === taskIndex) {
     // Stop timer and save
     const timeToSave = timerSeconds;
@@ -707,7 +749,7 @@ const handleGetLiveSupport = async (taskObj, taskIndex) => {
     setRegenInstructions("");
   };
 
-  const handleAddNote = async (taskIndex) => {
+  const handleAddNote = async (taskIndex: number) => {
   if (!userId || !firestoreDocId) return;
 
   const note = taskNotes[taskIndex] || '';
