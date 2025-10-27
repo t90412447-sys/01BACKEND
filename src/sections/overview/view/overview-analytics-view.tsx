@@ -158,22 +158,7 @@ useEffect(() => {
   };
 
   // NEW: Conditional rendering block for the full-screen Hub overlay
-if (isHubOpen) {
-    return (
-      <div className="fixed inset-0 z-[1000] overflow-y-auto bg-gradient-to-br from-purple-950 via-purple-900 to-indigo-950">
-        {/* The Hub Component */}
-        <IRLConnectionsHub onClose={() => setIsHubOpen(false)} />
-        
-        {/* External Close Button */}
-        {/*<button
-          onClick={() => setIsHubOpen(false)}
-          className="absolute top-4 right-4 z-[1001] p-3 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg transition-all"
-        >
-          <X className="w-6 h-6" />
-        </button>*/}
-      </div>
-    );
-  }
+
 
   // ======= SIGN-IN GATE =======
   if (loading) {
@@ -262,6 +247,7 @@ if (isHubOpen) {
               <div className="today-lesson-hero">
                 <div ref={todayRef} className="relative">
   <TodayActionCard />
+  
 
 </div>
 

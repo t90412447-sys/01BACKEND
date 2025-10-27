@@ -26,7 +26,7 @@ export default function App({ children }: AppProps) {
       <div
         style={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
+          background: 'linear-gradient(135deg, #240046 0%, #2d0066 50%, #330066 100%)',
         }}
       >
         {children}

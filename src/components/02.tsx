@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import { CheckCircle, Circle, Lock, BookOpen, Zap, Star, Sparkles, X, ChevronRight } from "lucide-react";
 import { db } from "../lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
@@ -88,87 +89,88 @@ useEffect(() => {
   if (!currentUser) return;
 
   const fetchTasks = async () => {
-    try {
-      const datedCoursesRef = collection(db, `users/${currentUser}/datedcourses`);
-      const snapshot = await getDocs(datedCoursesRef);
+  try {
+    console.log("🔍 Current User:", currentUser);
+    
+    // Access the specific social_skills document directly
+    const docRef = doc(db, `users/${currentUser}/datedcourses/social_skills`);
+    const docSnap = await getDoc(docRef);
 
-      if (snapshot.empty) {
-        setLoading(false);
-        return;
-      }
-
-      // Get first course document
-      const firstDoc = snapshot.docs[0];
-      const courseData = firstDoc.data();
-
-      console.log("📚 Course data:", courseData);
-
-      // ============ READ FROM task_overview.days ============
-      if (!courseData.task_overview || !courseData.task_overview.days) {
-        console.log("No task_overview found");
-        setLoading(false);
-        return;
-      }
-
-      const days = courseData.task_overview.days;
-      console.log("✅ Found", days.length, "days");
-
-      // Calculate today's date for status determination
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      // Transform task_overview.days to DayPlan format
-      const plans: DayPlan[] = days.map((day, index) => {
-        const dayDate = new Date(day.date);
-        dayDate.setHours(0, 0, 0, 0);
-
-        // Extract task descriptions
-        const tasksArray = day.tasks.map((t: any) => t.description || "");
-        
-        // Count completed tasks
-        const completedTasksCount = day.tasks.filter((t: any) => t.done === true).length;
-        const totalTasksCount = day.tasks.length;
-        const isFullyCompleted = completedTasksCount === totalTasksCount;
-
-        // Determine status based on date and completion
-        let status: DayPlan["status"];
-        
-        if (isFullyCompleted) {
-          status = "completed";
-        } else if (dayDate.getTime() === today.getTime()) {
-          status = "current";
-        } else if (dayDate < today) {
-          status = "unlocked"; // Past dates that aren't complete
-        } else if (index === 0) {
-          status = "unlocked"; // First day is always unlocked
-        } else {
-          // Check if previous day is complete
-          const prevDay = days[index - 1];
-          const prevDayComplete = prevDay.tasks.every((t: any) => t.done === true);
-          status = prevDayComplete ? "unlocked" : "locked";
-        }
-
-        return {
-          id: day.day,
-          date: day.date,
-          title: day.title,
-          status,
-          tasks: tasksArray,
-          completedTasks: completedTasksCount,
-          totalTasks: totalTasksCount,
-          xpReward: 150 + (day.day - 1) * 25,
-        };
-      });
-
-      console.log("📊 Transformed plans:", plans);
-      setDayPlans(plans);
-      
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    } finally {
+    if (!docSnap.exists()) {
+      console.log("No social_skills document found");
       setLoading(false);
+      return;
     }
-  };
+
+    const courseData = docSnap.data();
+    console.log("📚 Course data:", courseData);
+
+    // ============ READ FROM task_overview.days ============
+    if (!courseData.task_overview || !courseData.task_overview.days) {
+      console.log("No task_overview found");
+      setLoading(false);
+      return;
+    }
+
+    const days = courseData.task_overview.days;
+    console.log("✅ Found", days.length, "days");
+
+    // Calculate today's date for status determination
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Transform task_overview.days to DayPlan format
+    const plans: DayPlan[] = days.map((day: any, index: number) => {
+      const dayDate = new Date(day.date);
+      dayDate.setHours(0, 0, 0, 0);
+
+      // Extract task descriptions
+      const tasksArray = day.tasks.map((t: any) => t.description || t.task || "");
+      
+      // Count completed tasks
+      const completedTasksCount = day.tasks.filter((t: any) => t.done === true).length;
+      const totalTasksCount = day.tasks.length;
+      const isFullyCompleted = completedTasksCount === totalTasksCount;
+
+      // Determine status based on date and completion
+      let status: DayPlan["status"];
+      
+      if (isFullyCompleted) {
+        status = "completed";
+      } else if (dayDate.getTime() === today.getTime()) {
+        status = "current";
+      } else if (dayDate < today) {
+        status = "unlocked"; // Past dates that aren't complete
+      } else if (index === 0) {
+        status = "unlocked"; // First day is always unlocked
+      } else {
+        // Check if previous day is complete
+        const prevDay = days[index - 1];
+        const prevDayComplete = prevDay.tasks.every((t: any) => t.done === true);
+        status = prevDayComplete ? "unlocked" : "locked";
+      }
+
+      return {
+        id: day.day || index + 1,
+        date: day.date,
+        title: day.title || `Day ${index + 1}`,
+        status,
+        tasks: tasksArray,
+        completedTasks: completedTasksCount,
+        totalTasks: totalTasksCount,
+        xpReward: 150 + ((day.day || index + 1) - 1) * 25,
+      };
+    });
+
+    console.log("📊 Transformed plans:", plans);
+    setDayPlans(plans);
+    
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   fetchTasks();
 }, [currentUser]);

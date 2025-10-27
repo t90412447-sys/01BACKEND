@@ -37,7 +37,7 @@ body,
   /* ----------------------------------------------------------------------
      Global background matching BlogView
   ---------------------------------------------------------------------- */
-  background: linear-gradient(135deg, #1e0b2e 0%, #2d1b4e 50%, #1b1b4e 100%) !important;
+  background: linear-gradient(135deg, #12051e 0%, #25083d 45%, #0d0d2b 100%) !important;
   color: white;
 }
 
